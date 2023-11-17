@@ -1,5 +1,4 @@
-# Stemulator
-Open-source Music Demixer
+# Stemulator - Open-source Music Demixer
 
 This is currently just a pet project to enable AI-based music demixing without having to use a pay-to-play website.
 Under the hood, Stemulator uses [facebook's demucs](https://github.com/facebookresearch/demucs) so it must
