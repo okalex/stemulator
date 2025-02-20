@@ -32,10 +32,10 @@ export default class IpcRenderer {
         ipcRenderer.on(IpcChannel.HANDLE_ERROR, _callback)
     }
 
-    static handleComplete(callback: (code: number) => void): void {
-        const _callback = (event: any, code: number) => {
-            console.log("IpcRenderer.handleComplete", code);
-            callback(code);
+    static handleComplete(callback: (code: number, files: object) => void): void {
+        const _callback = (event: any, code: number, files: object) => {
+            console.log("IpcRenderer.handleComplete", code, files);
+            callback(code, files);
         }
         ipcRenderer.on(IpcChannel.HANDLE_COMPLETE, _callback)
     }

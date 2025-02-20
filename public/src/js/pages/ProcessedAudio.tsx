@@ -1,19 +1,17 @@
-import { Box, Button, ButtonGroup, Divider, Grid, List, ListItem, ListItemText, Stack, Typography } from '@mui/material';
 import React from 'react';
+import { Button, ButtonGroup, Grid, Typography } from '@mui/material';
 import { AudioMultiPlayer, AudioPlayer } from '../components/AudioPlayer';
-import { FileObject } from '../types/FileObject';
 import { DraggableBox } from '../components/DraggableBox';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DragIndicatorRoundedIcon from '@mui/icons-material/DragIndicatorRounded';
 import { indigo, teal } from '@mui/material/colors';
 
 type Props = {
-    origFile: FileObject,
-    rootPath: string,
-    folder: string
+    fileName: string,
+    filePaths: ProcessedFileObject,
 };
 
-export default function ProcessedAudio({ origFile, rootPath, folder }: Props) {
+export default function ProcessedAudio({ fileName, filePaths }: Props) {
 
     const [selectedTrack, setSelectedTrack] = React.useState(0) as [number, (track: number) => void];
 
@@ -29,42 +27,18 @@ export default function ProcessedAudio({ origFile, rootPath, folder }: Props) {
         fontSize: waveHeight / 2,
     };
 
-    function getFileNameFromPath(path: string) {
-        const regex = /^(.*[\\\/])([^\\\/]+)(\.[^\\\/.]+)$/;
-        const match = path.match(regex);
-        if (match) {
-            const fileName = match[2];
-            return fileName;
-        }
-    }
-
-    const origFileName = getFileNameFromPath(origFile.path);
-
-    function getStemPath(stem: string): string {
-        return `${rootPath}/${folder}/${origFileName}/${stem}.wav`;
-    }
-
-    function fileInfo(name: string, path: string) {
-        return {
-            name: name,
-            path: path,
-        };
-    }
-
-    const files = [
-        fileInfo("Original", origFile.path),
-        fileInfo("Vocals", getStemPath("vocals")),
-        fileInfo("Bass", getStemPath("bass")),
-        fileInfo("Drums", getStemPath("drums")),
-        fileInfo("Other", getStemPath("other")),
+    const fileUrls = [
+        filePaths.orig,
+        filePaths.vocals,
+        filePaths.bass,
+        filePaths.drums,
+        filePaths.other,
     ];
-
-    const fileUrls = files.map((file) => file.path);
 
     function handleCopyFile(event) {
         event.preventDefault();
 
-        const fileUrl = files[selectedTrack].path;
+        const fileUrl = filePaths[selectedTrack].path;
         console.log("Copying file...", fileUrl);
         window.api.copyToClipboard(fileUrl);
     }
@@ -79,15 +53,22 @@ export default function ProcessedAudio({ origFile, rootPath, folder }: Props) {
         };
     }
 
+    function button(idx: number, name: string) {
+        const variant = idx === selectedTrack ? "contained" : "outlined";
+        return (
+            <Button key={idx} variant={variant} onClick={changeSelection(idx)}>
+                {name}
+            </Button>
+        )
+    }
+
     function selectButtons() {
-        const buttons = files.map((file, idx) => {
-            const variant = idx === selectedTrack ? "contained" : "outlined";
-            return (
-                <Button key={idx} variant={variant} onClick={changeSelection(idx)}>
-                    {file.name}
-                </Button>
-            )
-        });
+        const buttons = [];
+        ["orig", "vocals", "bass", "drums", "other"].forEach((track, idx) => {
+            if (filePaths[track]) {
+                buttons.push(button(idx, track))
+            }
+        })
 
         return (
             <ButtonGroup variant="contained" aria-label="outlined primary button group">
@@ -100,7 +81,7 @@ export default function ProcessedAudio({ origFile, rootPath, folder }: Props) {
         <Grid container spacing={2}>
             <Grid item xs={12}>
                 <Typography variant="h6" align="center" component="p">
-                    {origFile.name}
+                    {fileName}
                 </Typography>
             </Grid>
 

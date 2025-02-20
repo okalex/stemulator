@@ -7,7 +7,7 @@ declare global {
             processAudio: (path: string, model: string) => Promise<void>,
             handleOutput: (callback: (event: any, output: any) => void) => void,
             handleError: (callback: (event: any, output: any) => void) => void,
-            handleComplete: (callback: (event: any, code: number) => void) => void,
+            handleComplete: (callback: (code: number, files: object) => void) => void,
             startDrag: (file: string) => void,
             removeListeners: () => void,
             copyToClipboard: (filePath: string) => void,

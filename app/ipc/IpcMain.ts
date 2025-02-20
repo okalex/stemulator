@@ -21,16 +21,17 @@ export default class IpcMain {
 
     static handleGetRootPath(): void {
         ipcMain.handle(IpcChannel.GET_ROOT_PATH, (event: any) => {
-            const rootPath = app.getAppPath();
+            // const rootPath = app.getAppPath();
+            const rootPath = "/tmp/"
             console.log("Returning root path: ", rootPath);
             return rootPath;
         });
     };
 
-    static handleProcessAudio(callback: (event: any, file: string, model: Model) => void): void {
-        ipcMain.handle(IpcChannel.PROCESS_AUDIO, (event: any, file: string, model: Model) => {
+    static handleProcessAudio(callback: (event: any, file: string, model: Model, outDir: string) => void): void {
+        ipcMain.handle(IpcChannel.PROCESS_AUDIO, (event: any, file: string, model: Model, outDir: string) => {
             console.log("Handling processAudio");
-            callback(event, file, model);
+            callback(event, file, model, outDir);
         });
     }
 
@@ -66,8 +67,8 @@ export default class IpcMain {
         this.event.sender.send('handleError', data);
     }
 
-    sendComplete(code: number | null): void {
-        console.log("exit", code);
-        this.event.sender.send('handleComplete', code);
+    sendComplete(code: number | null, files: object): void {
+        console.log("Sending handleComplete", code, files);
+        this.event.sender.send('handleComplete', code, files);
     }
 }

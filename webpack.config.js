@@ -39,7 +39,7 @@ module.exports = [
     },
 
     resolve: {
-      extensions: ['.js', '.jsx', '.ts', '.tsx']
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
     },
   },
 
@@ -81,7 +81,7 @@ module.exports = [
     },
 
     resolve: {
-      extensions: ['.js', '.jsx', '.ts', '.tsx']
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
     },
   },
 
@@ -150,7 +150,7 @@ module.exports = [
     ],
 
     resolve: {
-      extensions: ['.js', '.jsx', '.ts', '.tsx']
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
     },
 
     devServer: {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormControl, InputLabel, Select, MenuItem, Box } from '@mui/material';
-import { Model } from './Model';
+import { allModels, Model } from './Model';
 
 type Props = {
     model: Model,
@@ -25,15 +25,7 @@ export function ModelSelector({ model, setModel, sx }: Props) {
                     label="Model"
                     onChange={handleChange}
                 >
-                    <MenuItem value="htdemucs_ft">htdemucs_ft</MenuItem>
-                    <MenuItem value="htdemucs">htdemucs</MenuItem>
-                    <MenuItem value="htdemucs_6s">htdemucs_6s</MenuItem>
-                    <MenuItem value="hdemucs_mmi">hdemucs_mmi</MenuItem>
-                    <MenuItem value="mdx">mdx</MenuItem>
-                    <MenuItem value="mdx_extra">mdx_extra</MenuItem>
-                    <MenuItem value="mdx_q">mdx_q</MenuItem>
-                    <MenuItem value="mdx_extra_q">mdx_extra_q</MenuItem>
-                    <MenuItem value="SIG">SIG</MenuItem>
+                    {allModels.map((model) => <MenuItem value={model}>{model}</MenuItem>)}
                 </Select>
             </FormControl>
         </Box>

@@ -12,6 +12,7 @@ import ProcessedAudio from './pages/ProcessedAudio';
 import { FileObject } from './types/FileObject';
 import { DroppedFiles } from './components/Dropzone';
 import { Model } from './components/ModelSelector/Model';
+import { getFileNameFromPath } from './utils/files';
 
 require('./global');
 
@@ -26,21 +27,12 @@ function Main() {
     const [isProcessing, setProcessing] = useState(false) as [boolean, (processing: boolean) => void];
     const [isProcessed, setProcessed] = useState(false) as [boolean, (processed: boolean) => void];
     const [progress, setProgress] = useState(0) as [number, (progress: number) => void];
-    const [model, setModel] = useState(Model.htdemucs) as [Model, (model: Model) => void];
-    const [rootPath, setRootPath] = useState(null) as [string, (rootPath: string) => void];
-
-    useEffect(() => {
-        console.log("Getting root path...");
-        window.api.getRootPath().then((path) => {
-            console.log("Root path:", path);
-            setRootPath(path);
-        });
-    }, []);
+    const [model, setModel] = useState(Model.mel_band_roformer) as [Model, (model: Model) => void];
+    const [filePaths, setFilePaths] = useState<ProcessedFileObject>({ orig: "" });
 
     function handleDrop(dropped: DroppedFiles): void {
         const file = dropped.files[0] as FileObject;
         setCurrentFile(file);
-        // setProcessed(true);
     }
 
     function handleOutput(output: OutputObject): void {
@@ -52,8 +44,10 @@ function Main() {
     function handleError(data: string): void {
     }
 
-    function handleComplete(code: number): void {
+    function handleComplete(code: number, files: ProcessedFileObject): void {
+        console.log("Processing complete", code, files);
         if (code === 0) {
+            setFilePaths(files);
             setProcessed(true);
         }
         window.api.removeListeners();
@@ -79,7 +73,8 @@ function Main() {
 
     function render(): JSX.Element {
         if (isProcessed) {
-            return <ProcessedAudio origFile={currentFile} rootPath={rootPath} folder="separated/htdemucs/" />;
+            const fileName = getFileNameFromPath(currentFile.path);
+            return <ProcessedAudio fileName={fileName} filePaths={filePaths} />;
         } else if (isProcessing) {
             return <Processing file={currentFile} progress={progress} />;
         } else {
