@@ -2,7 +2,7 @@ import path from 'path';
 import fs from 'fs';
 import log from 'electron-log/main';
 import { execSync } from 'child_process';
-import { mkdir } from './utils/files'
+import { mkdir } from './utils/files';
 
 export function installModels() {
   const unpackedPath = path.join(process.resourcesPath, 'app.asar.unpacked');

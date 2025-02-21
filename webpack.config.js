@@ -54,7 +54,8 @@ module.exports = [
     },
 
     externals: {
-      fsevents: "require('fsevents')"
+      fsevents: "require('fsevents')",
+      '@ffmpeg-installer/ffmpeg': 'commonjs @ffmpeg-installer/ffmpeg' // Prevents Webpack from bundling it
     },
 
     module: {

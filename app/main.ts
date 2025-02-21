@@ -1,12 +1,9 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import path from 'path';
 import processAudio from './processAudio';
 import IpcMain from './ipc/IpcMain';
 import log from 'electron-log/main';
-import fs from 'fs';
-import { execSync } from 'child_process';
 import fixPath from 'fix-path';
-import { mkdir } from './utils/files';
 import { installModels } from './install';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
@@ -23,7 +20,7 @@ log.transports.console.level = 'info';
 log.transports.file.level = 'info';
 log.transports.ipc.level = 'info';
 
-// Install models
+// Installation
 if (app.isPackaged) {
   installModels();
 }

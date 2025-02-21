@@ -4,6 +4,7 @@ module.exports = {
   packagerConfig: {
     name: 'Stemulator',
     asar: {
+      unpack: '**/node_modules/@ffmpeg-installer/**', // Ensures FFmpeg is unpacked
       unpackDir: 'models_dist',
     },
   },

@@ -1,4 +1,4 @@
-import { ChildProcess, SpawnOptions } from 'child_process';
+import { ChildProcess, SpawnOptions, spawnSync } from 'child_process';
 import { app } from 'electron';
 import fs from 'fs';
 import path from 'path';
@@ -8,6 +8,7 @@ import IpcMain from './ipc/IpcMain';
 import log from 'electron-log/main';
 import { copyFile, getFileExtension, getFilenameWithoutExtension, ls, mkdir } from './utils/files';
 import { spawn } from './utils/process';
+import ffmpegPath from './utils/ffmpeg';
 
 let resourcePath = app.getAppPath()
 if (app.isPackaged) {
@@ -66,44 +67,10 @@ function quoted(s: string): string {
     return '"' + s + '"';
 }
 
-function melBandRoformer(ipc: IpcMain, file: string) {
-    const dataDir = app.getPath('userData');
-    log.info("Data path: " + dataDir);
-
-    const inputDir = mkdir(dataDir + "/input/");
-    const inputFile = copyFile(file, inputDir);
-
-    const modelPath = path.join(resourcePath, '/models/mel_band_roformer');
-    const inference = path.join(modelPath, 'inference');
-    ls(modelPath);
-
-    const fullOutDir = mkdir(`${dataDir}/separated/${getFilenameWithoutExtension(inputFile)}/`);
-
-    const modelArgs = [
-        '--config_path', quoted(`${modelPath}/configs/config_vocals_mel_band_roformer.yaml`),
-        '--model_path', quoted(`${modelPath}/MelBandRoformer.ckpt`),
-        '--input_folder', quoted(inputDir),
-        '--store_dir', quoted(fullOutDir)
-    ];
-
-    const onModelExit = (exitCode) => {
-        if (exitCode === 0) {
-            const files = {
-                orig: inputFile,
-                vocals: fullOutDir + 'input_vocals.wav',
-                other: fullOutDir + 'input_instrumental.wav',
-            }
-            log.info("Process exited with code", exitCode, files);
-            ipc.sendComplete(exitCode, files);
-        } else {
-            log.error("Error running mel-band roformer inference");
-            ipc.sendComplete(exitCode, {});
-        }
-    };
-
+function trackProgress(ipc: IpcMain) {
     let totalTime: number = 1000000000;
 
-    const onDataReceived = (data: string) => {
+    return (data: string) => {
         const totalTimeRegex = /Estimated total processing time for this track: ([0-9]+\.[0-9]+) seconds/;
         const totalTimeMatch = data.match(totalTimeRegex);
         if (totalTimeMatch) {
@@ -120,22 +87,56 @@ function melBandRoformer(ipc: IpcMain, file: string) {
             log.info(`Progress: ${progress}`);
             ipc.sendOutput(formatProgress(progress));
         }
-    }
+    };
+}
 
-    let processor: ChildProcess | null = null;
+function processingComplete(ipc: IpcMain, files: object) {
+    return (exitCode) => {
+        if (exitCode === 0) {
+            log.info("Process exited with code", exitCode, files);
+            ipc.sendComplete(exitCode, files);
+        } else {
+            log.error("Error running mel-band roformer inference");
+            ipc.sendComplete(exitCode, {});
+        }
+    };
+}
 
-    if (getFileExtension(inputFile) !== 'wav') {
-        log.info(`Converting ${inputFile} to ${inputDir}input.wav'`);
-        const ffmpegArgs = ['-y', '-i', quoted(inputFile), quoted(inputDir + 'input.wav')];
-        spawn('ffmpeg', ffmpegArgs, spawnOptions, () => { }, () => {
-            log.info("Running mel-band roformer inference");
-            processor = spawn(inference, modelArgs, spawnOptions, onDataReceived, onModelExit);
-        });
+function melBandRoformer(ipc: IpcMain, file: string) {
+    const dataDir = app.getPath('userData');
+    log.info("Data path: " + dataDir);
+
+    const modelPath = path.join(resourcePath, '/models/mel_band_roformer');
+    const inference = path.join(modelPath, 'inference');
+
+    const workingDir = mkdir(path.join(dataDir, 'separated', getFilenameWithoutExtension(file)));
+
+    const modelArgs = [
+        '--config_path', quoted(`${modelPath}/configs/config_vocals_mel_band_roformer.yaml`),
+        '--model_path', quoted(`${modelPath}/MelBandRoformer.ckpt`),
+        '--input_folder', quoted(workingDir),
+        '--store_dir', quoted(workingDir)
+    ];
+
+    const wavFile = path.join(workingDir, 'orig.wav');
+    if (getFileExtension(file) !== 'wav') {
+        log.info(`Converting ${file} to wav...`);
+
+        const ffmpeg = ffmpegPath();
+        const ffmpegArgs = ['-y', '-i', quoted(file), quoted(wavFile)];
+        spawnSync(ffmpeg, ffmpegArgs, spawnOptions);
     } else {
-        log.info("Running mel-band roformer inference");
-        processor = spawn(inference, modelArgs, spawnOptions, onDataReceived, onModelExit);
-
+        copyFile(file, wavFile);
     }
+
+    const files = {
+        orig: wavFile,
+        vocals: path.join(workingDir, 'orig_vocals.wav'),
+        other: path.join(workingDir, 'orig_instrumental.wav'),
+    }
+
+    log.info("Running mel-band roformer inference");
+    const processor = spawn(inference, modelArgs, spawnOptions, trackProgress(ipc), processingComplete(ipc, files));
 
 }
 
