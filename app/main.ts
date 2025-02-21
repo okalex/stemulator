@@ -2,10 +2,40 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 import processAudio from './processAudio';
 import IpcMain from './ipc/IpcMain';
+import log from 'electron-log/main';
+import fs from 'fs';
+import { execSync } from 'child_process';
+import fixPath from 'fix-path';
+import { mkdir } from './utils/files';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
   app.quit();
+}
+
+// Fix path
+fixPath();
+
+// Initialize logging
+log.initialize();
+log.transports.console.level = 'info';
+log.transports.file.level = 'info';
+log.transports.ipc.level = 'info';
+
+// Extract models.tar.gz
+if (app.isPackaged) {
+  const unpackedPath = path.join(process.resourcesPath, 'app.asar.unpacked');
+
+  const modelsPath = mkdir(path.join(unpackedPath, 'models'));
+  if (!fs.existsSync(modelsPath)) {
+    mkdir(modelsPath);
+  }
+
+  const melBandRoformerPath = path.join(unpackedPath, 'models', 'mel_band_roformer');
+  if (!fs.existsSync(melBandRoformerPath)) {
+    log.info('Extracting mel_band_roformer.tar.gz...');
+    execSync(`tar -xzf ${path.join(unpackedPath, 'mel_band_roformer.tar.gz')} -C ${modelsPath}`);
+  }
 }
 
 // Auto-reload

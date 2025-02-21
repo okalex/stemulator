@@ -1,6 +1,11 @@
+const path = require('path');
+
 module.exports = {
   packagerConfig: {
-    asar: true,
+    name: 'Stemulator',
+    asar: {
+      unpack: 'mel_band_roformer.tar.gz',
+    },
   },
   rebuildConfig: {},
   makers: [

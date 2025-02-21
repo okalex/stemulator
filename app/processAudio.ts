@@ -1,10 +1,27 @@
-import { ChildProcess, SpawnOptions, spawn } from 'child_process';
+import { ChildProcess, SpawnOptions } from 'child_process';
 import { app } from 'electron';
 import fs from 'fs';
 import path from 'path';
 import { OutputObject } from '../public/src/js/App';
 import { Model } from '../public/src/js/components/ModelSelector/Model';
 import IpcMain from './ipc/IpcMain';
+import log from 'electron-log/main';
+import { copyFile, getFileExtension, getFilenameWithoutExtension, ls, mkdir } from './utils/files';
+import { spawn } from './utils/process';
+
+let resourcePath = app.getAppPath()
+if (app.isPackaged) {
+    resourcePath = path.join(process.resourcesPath, 'app.asar.unpacked');
+}
+ls(resourcePath);
+
+const spawnOptions: SpawnOptions = {
+    stdio: ['ignore', 'pipe', 'pipe'],
+    detached: true,
+    shell: true,
+    cwd: path.join(resourcePath, 'models', 'mel_band_roformer'),
+};
+
 
 function extractProgress(data: string): number | null {
     const regex = /(\d+)%\|.*/;
@@ -12,7 +29,7 @@ function extractProgress(data: string): number | null {
 
     if (match) {
         const percentage = match[1];
-        console.log(`Percentage: ${percentage}`);
+        log.info(`Percentage: ${percentage}`);
         return Number(percentage);
     } else {
         return null;
@@ -22,22 +39,6 @@ function extractProgress(data: string): number | null {
 function formatProgress(value: number): OutputObject {
     return IpcMain.formatOutputJson('progress', value);
 }
-
-function copyFile(sourceFile: string, destDir: string): string {
-    const dest: string = destDir + sourceFile.split('/').pop();
-    fs.copyFileSync(sourceFile, dest);
-    console.log('File copied successfully to ' + dest);
-    return dest;
-}
-
-function getFileExtension(file: string): string | null {
-    const match = file.match(/\.(\w+)$/);
-    return match ? match[1].toLowerCase() : null;
-}
-
-const getFilenameWithoutExtension = (filePath: string): string => {
-    return path.basename(filePath, path.extname(filePath));
-};
 
 function trackProcess(ipc: IpcMain, processor: ChildProcess, onExit?: (code: number) => object) {
     processor.stdout?.on('data', (data) => {
@@ -56,7 +57,7 @@ function trackProcess(ipc: IpcMain, processor: ChildProcess, onExit?: (code: num
     processor.on('exit', (code) => {
         let files = {};
         if (onExit) files = onExit(code ?? 0);
-        console.log("Process exited with code", code, files);
+        log.info("Process exited with code", code, files);
         ipc.sendComplete(code, files);
     });
 }
@@ -65,69 +66,89 @@ function quoted(s: string): string {
     return '"' + s + '"';
 }
 
-export default function processAudio(event: any, file: string, model: Model): void {
+function melBandRoformer(ipc: IpcMain, file: string) {
+    const dataDir = app.getPath('userData');
+    log.info("Data path: " + dataDir);
 
-    const ipc = new IpcMain(event);
-
-    const options: SpawnOptions = {
-        stdio: ['ignore', 'pipe', 'pipe'],
-        detached: true,
-        shell: true,
-        cwd: app.getAppPath(),
-    };
-
-    const outDir = app.getPath('userData');
-    const inputDir = outDir + "/input/";
-    fs.mkdirSync(inputDir, { recursive: true });
+    const inputDir = mkdir(dataDir + "/input/");
     const inputFile = copyFile(file, inputDir);
-    const inputFileExt = getFileExtension(inputFile);
 
-    const baseDir = app.getAppPath() + '/models/mel_band_roformer';
-    const configPath = `${baseDir}/configs/config_vocals_mel_band_roformer.yaml`;
-    const modelPath = `${baseDir}/MelBandRoformer.ckpt`;
-    const fileName = getFilenameWithoutExtension(inputFile);
-    const fullOutDir = outDir + '/separated/' + model + '/' + fileName + '/';
+    const modelPath = path.join(resourcePath, '/models/mel_band_roformer');
+    const inference = path.join(modelPath, 'inference');
+    ls(modelPath);
 
-    const onExit = (exitCode) => {
+    const fullOutDir = mkdir(`${dataDir}/separated/${getFilenameWithoutExtension(inputFile)}/`);
+
+    const modelArgs = [
+        '--config_path', quoted(`${modelPath}/configs/config_vocals_mel_band_roformer.yaml`),
+        '--model_path', quoted(`${modelPath}/MelBandRoformer.ckpt`),
+        '--input_folder', quoted(inputDir),
+        '--store_dir', quoted(fullOutDir)
+    ];
+
+    const onModelExit = (exitCode) => {
         if (exitCode === 0) {
-            return {
+            const files = {
                 orig: inputFile,
                 vocals: fullOutDir + 'input_vocals.wav',
                 other: fullOutDir + 'input_instrumental.wav',
             }
+            log.info("Process exited with code", exitCode, files);
+            ipc.sendComplete(exitCode, files);
         } else {
-            console.log("Error running mel-band roformer inference");
-            return {};
+            log.error("Error running mel-band roformer inference");
+            ipc.sendComplete(exitCode, {});
         }
     };
 
+    let totalTime: number = 1000000000;
+
+    const onDataReceived = (data: string) => {
+        const totalTimeRegex = /Estimated total processing time for this track: ([0-9]+\.[0-9]+) seconds/;
+        const totalTimeMatch = data.match(totalTimeRegex);
+        if (totalTimeMatch) {
+            totalTime = Number(totalTimeMatch[1]);
+            log.info(`Total time: ${totalTime}`);
+        }
+
+        const timeLeftRegex = /Estimated time remaining: ([0-9]+\.[0-9]+) seconds/;
+        const timeLeftMatch = data.match(timeLeftRegex);
+        if (timeLeftMatch) {
+            const currentTime = Number(timeLeftMatch[1]);
+            log.info(`Time left: ${currentTime}`);
+            const progress = Math.round((totalTime - currentTime) / totalTime * 100);
+            log.info(`Progress: ${progress}`);
+            ipc.sendOutput(formatProgress(progress));
+        }
+    }
+
     let processor: ChildProcess | null = null;
 
-    if (model === Model.mel_band_roformer) {
-        if (inputFileExt !== 'wav') {
-            console.log(`Converting ${inputFile} to ${inputDir}input.wav'`);
-            const ffmpeg = spawn('ffmpeg', ['-y', '-i', quoted(inputFile), quoted(inputDir + 'input.wav')], options);
-
-            ffmpeg.stdout?.on('data', (data) => {
-                console.log(data.toString());
-            });
-
-            ffmpeg.stderr?.on('data', (data) => {
-                console.log(data.toString());
-            });
-
-            ffmpeg.on('exit', (code) => {
-                console.log(`Creating output directory ${fullOutDir}`);
-                fs.mkdirSync(fullOutDir, { recursive: true });
-                console.log("Running mel-band roformer inference");
-                processor = spawn(`${baseDir}/inference`, ['--config_path', quoted(configPath), '--model_path', quoted(modelPath), '--input_folder', quoted(inputDir), '--store_dir', quoted(fullOutDir)], options);
-                trackProcess(ipc, processor, onExit);
-            });
-        }
+    if (getFileExtension(inputFile) !== 'wav') {
+        log.info(`Converting ${inputFile} to ${inputDir}input.wav'`);
+        const ffmpegArgs = ['-y', '-i', quoted(inputFile), quoted(inputDir + 'input.wav')];
+        spawn('ffmpeg', ffmpegArgs, spawnOptions, () => { }, () => {
+            log.info("Running mel-band roformer inference");
+            processor = spawn(inference, modelArgs, spawnOptions, onDataReceived, onModelExit);
+        });
     } else {
-        console.log(`Spawning audio processor in ${outDir} with model ${model} for ${file}`);
-        processor = spawn('demucs', ['-n', model, "\"" + file + "\""], options);
-        trackProcess(ipc, processor);
+        log.info("Running mel-band roformer inference");
+        processor = spawn(inference, modelArgs, spawnOptions, onDataReceived, onModelExit);
+
+    }
+
+}
+
+export default function processAudio(event: any, file: string, model: Model): void {
+
+    log.info(`Processing audio file ${file} with model ${model}`);
+
+    const ipc = new IpcMain(event);
+
+    if (model === Model.mel_band_roformer) {
+        melBandRoformer(ipc, file);
+    } else {
+        ipc.sendError("Model not implemented");
     }
 
 }
