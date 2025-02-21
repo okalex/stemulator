@@ -4,7 +4,7 @@ module.exports = {
   packagerConfig: {
     name: 'Stemulator',
     asar: {
-      unpack: 'mel_band_roformer.tar.gz',
+      unpackDir: 'models_dist',
     },
   },
   rebuildConfig: {},
