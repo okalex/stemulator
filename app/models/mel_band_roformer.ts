@@ -6,7 +6,6 @@ import log from 'electron-log/main';
 import { copyFile, getFileExtension, getFilenameWithoutExtension, mkdir } from '../utils/files';
 import { spawn, spawnOptions } from '../utils/process';
 import ffmpegPath from '../utils/ffmpeg';
-import { formatProgress } from '../processAudio';
 
 let resourcePath = app.getAppPath()
 if (app.isPackaged) {
@@ -17,7 +16,7 @@ function quoted(s: string): string {
   return '"' + s + '"';
 }
 
-function trackProgress(ipc: IpcMain) {
+function calcProgress(updateProgress: (value: number) => void) {
   let totalTime: number = 1000000000;
 
   return (data: string) => {
@@ -34,25 +33,16 @@ function trackProgress(ipc: IpcMain) {
       const currentTime = Number(timeLeftMatch[1]);
       log.info(`Time left: ${currentTime}`);
       const progress = Math.round((totalTime - currentTime) / totalTime * 100);
-      log.info(`Progress: ${progress}`);
-      ipc.sendOutput(formatProgress(progress));
+      updateProgress(progress);
     }
   };
 }
 
-function processingComplete(ipc: IpcMain, files: object) {
-  return (exitCode) => {
-    if (exitCode === 0) {
-      log.info("Process exited with code", exitCode, files);
-      ipc.sendComplete(exitCode, files);
-    } else {
-      log.error("Error running mel-band roformer inference");
-      ipc.sendComplete(exitCode, {});
-    }
-  };
-}
-
-export default function melBandRoformer(ipc: IpcMain, file: string) {
+export default function melBandRoformer(
+  file: string,
+  updateProgress: (value: number) => void,
+  processingComplete: (files: object) => (exitCode: number) => void
+): void {
   const dataDir = app.getPath('userData');
   log.info("Data path: " + dataDir);
 
@@ -86,6 +76,6 @@ export default function melBandRoformer(ipc: IpcMain, file: string) {
   }
 
   log.info("Running mel-band roformer inference");
-  const processor = spawn(inference, modelArgs, spawnOptions(modelPath), trackProgress(ipc), processingComplete(ipc, files));
+  spawn(inference, modelArgs, spawnOptions(modelPath), calcProgress(updateProgress), processingComplete(files));
 
 }
