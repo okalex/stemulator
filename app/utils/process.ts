@@ -27,3 +27,12 @@ export function spawn(
 
   return process;
 }
+
+export function spawnOptions(cwd?: string): SpawnOptions {
+  return {
+    stdio: ['ignore', 'pipe', 'pipe'],
+    detached: true,
+    shell: true,
+    cwd,
+  };
+}
