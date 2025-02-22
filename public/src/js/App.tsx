@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { Box } from '@mui/material';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
@@ -27,7 +26,6 @@ function Main() {
     const [isProcessing, setProcessing] = useState(false) as [boolean, (processing: boolean) => void];
     const [isProcessed, setProcessed] = useState(false) as [boolean, (processed: boolean) => void];
     const [progress, setProgress] = useState(0) as [number, (progress: number) => void];
-    const [model, setModel] = useState(Model.mel_band_roformer) as [Model, (model: Model) => void];
     const [filePaths, setFilePaths] = useState<ProcessedFileObject>({ orig: "" });
 
     function handleDrop(dropped: DroppedFiles): void {
@@ -60,7 +58,7 @@ function Main() {
         window.api.handleOutput(handleOutput);
         window.api.handleError(handleError);
         window.api.handleComplete(handleComplete);
-        window.api.processAudio(currentFile.path, model);
+        window.api.processAudio(currentFile.path, Model.mel_band_roformer);
     }
 
     function handleCancel(): void {
@@ -79,7 +77,7 @@ function Main() {
             return <Processing file={currentFile} progress={progress} />;
         } else {
             if (currentFile) {
-                return <FileOverview file={currentFile} onProcess={handleProcess} onCancel={handleCancel} model={model} setModel={setModel} />;
+                return <FileOverview file={currentFile} onProcess={handleProcess} onCancel={handleCancel} />;
             } else {
                 return <NewFile onDrop={handleDrop} />;
             }
@@ -87,9 +85,9 @@ function Main() {
     }
 
     return (
-        <Box sx={style}>
+        <div>
             {render()}
-        </Box>
+        </div>
     );
 }
 

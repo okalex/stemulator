@@ -1,9 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Box, Grid } from '@mui/material';
-import PlayCircleOutlineRoundedIcon from '@mui/icons-material/PlayCircleOutlineRounded';
-import PauseCircleOutlineRoundedIcon from '@mui/icons-material/PauseCircleOutlineRounded';
-import { amber, cyan, deepPurple, green, indigo, orange, pink, teal } from '@mui/material/colors';
+import React, { useState } from 'react';
 import WaveForm from './WaveForm';
+import { Button } from '@fluentui/react-components';
 
 type Props = {
     urls: string[],
@@ -31,39 +28,41 @@ export default function AudioMultiPlayer({ urls, selectedTrack, height, options 
     }
 
     const playIconStyle = {
-        color: teal[500],
+        color: '#000',
         fontSize: height,
     };
     const icon = isPlaying ?
-        <PauseCircleOutlineRoundedIcon onClick={onPlayClick} sx={playIconStyle} /> :
-        <PlayCircleOutlineRoundedIcon onClick={onPlayClick} sx={playIconStyle} />;
+        <Button onClick={onPlayClick}>Pause</Button> :
+        <Button onClick={onPlayClick}>Play</Button>;
 
     function renderWaveforms() {
         return urls.map((url, idx) => {
-            const isActive = idx === selectedTrack;
-            const _isPlaying = isActive && isPlaying;
-            const _options = { ...options, height: height };
-            return (
-                <WaveForm
-                    key={idx}
-                    idx={idx}
-                    url={url}
-                    isPlaying={_isPlaying}
-                    isActive={isActive}
-                    currentTime={currentTime}
-                    setCurrentTime={updateCurrentTime}
-                    options={_options}
-                />
-            );
+            if (url !== null) {
+                const isActive = idx === selectedTrack;
+                const _isPlaying = isActive && isPlaying;
+                const _options = { ...options, height: height };
+                return (
+                    <WaveForm
+                        key={idx}
+                        idx={idx}
+                        url={url}
+                        isPlaying={_isPlaying}
+                        isActive={isActive}
+                        currentTime={currentTime}
+                        setCurrentTime={updateCurrentTime}
+                        options={_options}
+                    />
+                );
+            }
         });
     }
 
     return (
-        <Grid container>
-            <Grid item xs={2}>{icon}</Grid>
-            <Grid item xs={9}>
+        <div>
+            <div>{icon}</div>
+            <div>
                 {renderWaveforms()}
-            </Grid>
-        </Grid>
+            </div>
+        </div>
     );
 }

@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
-import { Grid } from '@mui/material';
-import PlayCircleOutlineRoundedIcon from '@mui/icons-material/PlayCircleOutlineRounded';
-import PauseCircleOutlineRoundedIcon from '@mui/icons-material/PauseCircleOutlineRounded';
-import { amber, cyan, deepPurple, green, indigo, orange, pink, teal } from '@mui/material/colors';
 import WaveForm from './WaveForm';
+import { Button } from '@fluentui/react-components';
 
 type Props = {
     url: string,
@@ -25,12 +22,12 @@ export default function AudioPlayer({ url, height, options }: Props) {
     }
 
     const iconStyle = {
-        color: teal[500],
+        color: '#000',
         fontSize: height,
     };
     const icon = isPlaying ?
-        <PauseCircleOutlineRoundedIcon onClick={onPlayClick} sx={iconStyle} /> :
-        <PlayCircleOutlineRoundedIcon onClick={onPlayClick} sx={iconStyle} />;
+        <Button onClick={onPlayClick}>Pause</Button> :
+        <Button onClick={onPlayClick}>Play</Button>;
 
     const _options = {
         ...options,
@@ -38,11 +35,11 @@ export default function AudioPlayer({ url, height, options }: Props) {
     }
 
     return (
-        <Grid container>
-            <Grid item xs={2}>{icon}</Grid>
-            <Grid item xs={9}>
+        <div>
+            <div>{icon}</div>
+            <div>
                 <WaveForm idx={0} url={url} isPlaying={isPlaying} options={_options} />
-            </Grid>
-        </Grid>
+            </div>
+        </div>
     );
 }

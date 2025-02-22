@@ -1,6 +1,4 @@
-import { Box } from '@mui/material';
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { teal } from '@mui/material/colors';
 
 import WaveSurfer, { WaveSurferOptions } from 'wavesurfer.js';
 
@@ -25,8 +23,8 @@ export default function WaveForm({ idx, url, isPlaying, isActive, currentTime, s
 
 
     const defaultOptions: object = {
-        waveColor: teal[300],
-        progressColor: teal[800],
+        waveColor: '#000',
+        progressColor: '#000',
         url: url,
     };
 
@@ -95,13 +93,8 @@ export default function WaveForm({ idx, url, isPlaying, isActive, currentTime, s
         }
     }, [wavesurfer, isActive]);
 
-    const visibility = isActive === false ? { display: 'none' } : {}; // Defaults to visible
-    const style = {
-        ...visibility,
-    }
-
     return (
-        <Box ref={ref} sx={style} />
+        <div ref={ref} />
     );
 
 }

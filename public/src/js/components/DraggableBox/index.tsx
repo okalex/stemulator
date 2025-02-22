@@ -1,14 +1,12 @@
-import { Box } from '@mui/material';
 import React, { useState } from 'react';
 
 type Props = {
     children?: JSX.Element,
     dragData: any,
-    sx?: object,
     ref?: any
 };
 
-export function DraggableBox({ children, dragData, sx, ref }: Props) {
+export function DraggableBox({ children, dragData, ref }: Props) {
 
     const [mouseDown, setMouseDown] = useState(false);
 
@@ -30,14 +28,9 @@ export function DraggableBox({ children, dragData, sx, ref }: Props) {
         cursor: mouseDown ? "grabbing" : "grab"
     };
 
-    const style = {
-        ...sx,
-        ...mouseStyle,
-    }
-
     return (
-        <Box onDragStart={handleDragStart} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} sx={style} draggable={true} ref={ref}>
+        <div onDragStart={handleDragStart} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} draggable={true} ref={ref}>
             {children}
-        </Box>
+        </div>
     );
 }

@@ -1,11 +1,11 @@
 import { spawnSync } from 'child_process';
 import { app } from 'electron';
 import path from 'path';
-import IpcMain from '../ipc/IpcMain';
 import log from 'electron-log/main';
 import { copyFile, getFileExtension, getFilenameWithoutExtension, mkdir } from '../utils/files';
 import { spawn, spawnOptions } from '../utils/process';
 import ffmpegPath from '../utils/ffmpeg';
+import fs from 'fs';
 
 let resourcePath = app.getAppPath()
 if (app.isPackaged) {
@@ -20,6 +20,7 @@ function calcProgress(updateProgress: (value: number) => void) {
   let totalTime: number = 1000000000;
 
   return (data: string) => {
+    // Get total time estimate
     const totalTimeRegex = /Estimated total processing time for this track: ([0-9]+\.[0-9]+) seconds/;
     const totalTimeMatch = data.match(totalTimeRegex);
     if (totalTimeMatch) {
@@ -27,12 +28,13 @@ function calcProgress(updateProgress: (value: number) => void) {
       log.info(`Total time: ${totalTime}`);
     }
 
+    // Get remaining time estimate
     const timeLeftRegex = /Estimated time remaining: ([0-9]+\.[0-9]+) seconds/;
     const timeLeftMatch = data.match(timeLeftRegex);
     if (timeLeftMatch) {
-      const currentTime = Number(timeLeftMatch[1]);
-      log.info(`Time left: ${currentTime}`);
-      const progress = Math.round((totalTime - currentTime) / totalTime * 100);
+      const timeLeft = Number(timeLeftMatch[1]);
+      log.info(`Time left: ${timeLeft}`);
+      const progress = Math.round((totalTime - timeLeft) / totalTime * 100);
       updateProgress(progress);
     }
   };
@@ -49,7 +51,9 @@ export default function melBandRoformer(
   const modelPath = path.join(resourcePath, 'models', 'mel_band_roformer');
   const inference = path.join(modelPath, 'inference');
 
-  const workingDir = mkdir(path.join(dataDir, 'separated', getFilenameWithoutExtension(file)));
+  const workingDir = path.join(dataDir, 'separated', getFilenameWithoutExtension(file));
+  fs.rmdirSync(workingDir, { recursive: true });
+  mkdir(workingDir);
 
   const modelArgs = [
     '--config_path', quoted(`${modelPath}/configs/config_vocals_mel_band_roformer.yaml`),

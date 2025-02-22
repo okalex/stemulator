@@ -1,4 +1,3 @@
-import { OutputObject } from '../public/src/js/App';
 import { Model } from '../public/src/js/components/ModelSelector/Model';
 import IpcMain from './ipc/IpcMain';
 import log from 'electron-log/main';
