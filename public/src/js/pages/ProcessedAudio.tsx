@@ -1,7 +1,7 @@
 import React from 'react';
 import { AudioMultiPlayer } from '../components/AudioPlayer';
 import { DraggableBox } from '../components/DraggableBox';
-import { Button, Text } from '@fluentui/react-components';
+import { Button } from '@fluentui/react-components';
 import { useAppStore } from '../stores/AppStore';
 import { useAudioPlayerStore } from '../components/AudioPlayer/AudioPlayerStore';
 import { TrackSelector } from '../components/AudioPlayer/TrackSelector';
@@ -24,17 +24,13 @@ export default function ProcessedAudio() {
     function handleCopyFile(event) {
         event.preventDefault();
 
-        const fileUrl = appStore.processedFiles[audioPlayerStore.selectedTrack].path;
+        const fileUrl = fileUrls[audioPlayerStore.selectedTrack];
         console.log("Copying file...", fileUrl);
         window.api.copyToClipboard(fileUrl);
     }
 
     return (
         <div>
-            <div>
-                <Text>{appStore.currentFile}</Text>
-            </div>
-
             <div>
                 <TrackSelector />
             </div>

@@ -44,12 +44,6 @@ export default function FileOverview() {
     return (
         <div>
             <div>
-                <Text>
-                    {appStore.currentFile}
-                </Text>
-            </div>
-
-            <div>
                 <AudioPlayer height={80} url={appStore.currentFile} />
             </div>
 

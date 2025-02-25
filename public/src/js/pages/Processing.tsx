@@ -1,5 +1,4 @@
 import React from 'react';
-import { FileObject } from '../types/FileObject';
 import { Text } from '@fluentui/react-components';
 import { useAppStore } from '../stores/AppStore';
 
@@ -9,10 +8,6 @@ export default function Processing() {
 
     return (
         <div>
-            <div>
-                <Text>{appStore.currentFile}</Text>
-            </div>
-
             <div>
                 Progress bar
             </div>

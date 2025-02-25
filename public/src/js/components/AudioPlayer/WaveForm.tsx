@@ -22,7 +22,6 @@ export default function WaveForm({ idx, url, isPlaying, isActive, options }: Pro
     const ref = useRef();
     const [wavesurfer, setWavesurfer] = useState(null);
 
-
     const defaultOptions: object = {
         waveColor: '#000',
         progressColor: '#000',
