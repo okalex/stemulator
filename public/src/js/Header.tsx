@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, Title1 } from '@fluentui/react-components';
 import { useAppStore } from './stores/AppStore';
+import { getFileNameFromPath } from './utils/files';
 
 export default function Header() {
 
@@ -9,7 +10,7 @@ export default function Header() {
     return (
         <div>
             <Title1>Stemulator</Title1>
-            <Text>{appStore.currentFile}</Text>
+            <Text>{getFileNameFromPath(appStore.currentFile)}</Text>
         </div>
     );
 };
