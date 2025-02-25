@@ -52,7 +52,9 @@ export default function melBandRoformer(
   const inference = path.join(modelPath, 'inference');
 
   const workingDir = path.join(dataDir, 'separated', getFilenameWithoutExtension(file));
-  fs.rmdirSync(workingDir, { recursive: true });
+  if (fs.existsSync(workingDir)) {
+    fs.rmdirSync(workingDir, { recursive: true });
+  }
   mkdir(workingDir);
 
   const modelArgs = [

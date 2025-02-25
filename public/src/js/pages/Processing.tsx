@@ -1,18 +1,16 @@
 import React from 'react';
 import { FileObject } from '../types/FileObject';
 import { Text } from '@fluentui/react-components';
+import { useAppStore } from '../stores/AppStore';
 
-type Props = {
-    file: FileObject,
-    progress: number
-};
+export default function Processing() {
 
-export default function Processing({ file, progress }: Props) {
+    const appStore = useAppStore();
 
     return (
         <div>
             <div>
-                <Text>{file.name}</Text>
+                <Text>{appStore.currentFile}</Text>
             </div>
 
             <div>
@@ -20,7 +18,7 @@ export default function Processing({ file, progress }: Props) {
             </div>
 
             <div>
-                <Text>Processing audio… {progress}%</Text>
+                <Text>Processing audio… {appStore.progress}%</Text>
             </div>
         </div>
     );

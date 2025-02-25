@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
@@ -7,11 +7,7 @@ import NewFile from './pages/NewFile';
 import FileOverview from './pages/FileOverview';
 import Processing from './pages/Processing';
 import ProcessedAudio from './pages/ProcessedAudio';
-
-import { FileObject } from './types/FileObject';
-import { DroppedFiles } from './components/Dropzone';
-import { Model } from './components/ModelSelector/Model';
-import { getFileNameFromPath } from './utils/files';
+import { useAppStore } from './stores/AppStore';
 
 require('./global');
 
@@ -21,65 +17,18 @@ export type OutputObject = {
 };
 
 function Main() {
-
-    const [currentFile, setCurrentFile] = useState(null) as [FileObject, (file: FileObject) => void];
-    const [isProcessing, setProcessing] = useState(false) as [boolean, (processing: boolean) => void];
-    const [isProcessed, setProcessed] = useState(false) as [boolean, (processed: boolean) => void];
-    const [progress, setProgress] = useState(0) as [number, (progress: number) => void];
-    const [filePaths, setFilePaths] = useState<ProcessedFileObject>({ orig: "" });
-
-    function handleDrop(dropped: DroppedFiles): void {
-        const file = dropped.files[0] as FileObject;
-        setCurrentFile(file);
-    }
-
-    function handleOutput(output: OutputObject): void {
-        if (output.type === "progress") {
-            setProgress(output.data);
-        }
-    }
-
-    function handleError(data: string): void {
-    }
-
-    function handleComplete(code: number, files: ProcessedFileObject): void {
-        console.log("Processing complete", code, files);
-        if (code === 0) {
-            setFilePaths(files);
-            setProcessed(true);
-        }
-        window.api.removeListeners();
-        setProcessing(false);
-    }
-
-    function handleProcess(): void {
-        console.log("handleProcess", currentFile);
-        setProcessing(true);
-        window.api.handleOutput(handleOutput);
-        window.api.handleError(handleError);
-        window.api.handleComplete(handleComplete);
-        window.api.processAudio(currentFile.path, Model.mel_band_roformer);
-    }
-
-    function handleCancel(): void {
-        setCurrentFile(null);
-    }
-
-    const style = {
-        p: 2
-    };
+    const appStore = useAppStore();
 
     function render(): JSX.Element {
-        if (isProcessed) {
-            const fileName = getFileNameFromPath(currentFile.path);
-            return <ProcessedAudio fileName={fileName} filePaths={filePaths} />;
-        } else if (isProcessing) {
-            return <Processing file={currentFile} progress={progress} />;
+        if (appStore.isProcessed) {
+            return <ProcessedAudio />;
+        } else if (appStore.isProcessing) {
+            return <Processing />;
         } else {
-            if (currentFile) {
-                return <FileOverview file={currentFile} onProcess={handleProcess} onCancel={handleCancel} />;
+            if (appStore.currentFile) {
+                return <FileOverview />;
             } else {
-                return <NewFile onDrop={handleDrop} />;
+                return <NewFile />;
             }
         }
     }

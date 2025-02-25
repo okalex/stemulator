@@ -1,15 +1,19 @@
 import React from 'react';
 import Dropzone, { DroppedFiles } from '../components/Dropzone';
+import { useAppStore } from '../stores/AppStore';
 
-type Props = {
-    onDrop: (files: DroppedFiles) => void;
-};
+export default function NewFile() {
 
-export default function NewFile({ onDrop }: Props) {
+    const appStore = useAppStore();
+
+    function handleDrop(dropped: DroppedFiles): void {
+        const file = dropped.files[0].path;
+        appStore.setCurrentFile(file);
+    }
 
     return (
         <div>
-            <Dropzone onDrop={onDrop} />
+            <Dropzone onDrop={handleDrop} />
         </div>
     );
 }

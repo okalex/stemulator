@@ -36,7 +36,8 @@
     "react-dom": "^18.2.0",
     "styled-components": "^6.1.1",
     "wavesurfer-multitrack": "^0.4.2",
-    "wavesurfer.js": "^7.4.5"
+    "wavesurfer.js": "^7.4.5",
+    "zustand": "^5.0.3"
   },
   "peerDependencies": {
     "react": "^17.0.0 || ^18.0.0",
