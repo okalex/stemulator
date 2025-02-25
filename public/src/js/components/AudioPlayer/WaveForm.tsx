@@ -1,18 +1,19 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 
 import WaveSurfer, { WaveSurferOptions } from 'wavesurfer.js';
+import { useAudioPlayerStore } from './AudioPlayerStore';
 
 type Props = {
     idx: number,
     url: string,
     isPlaying: boolean,
     isActive?: boolean,
-    currentTime?: number,
-    setCurrentTime?: (idx: number, time: number) => void,
     options?: object,
 }
 
-export default function WaveForm({ idx, url, isPlaying, isActive, currentTime, setCurrentTime, options }: Props) {
+export default function WaveForm({ idx, url, isPlaying, isActive, options }: Props) {
+
+    const audioPlayerStore = useAudioPlayerStore();
 
     function log(...msgs) {
         console.log(`WaveForm[${idx}]`, ...msgs);
@@ -67,9 +68,9 @@ export default function WaveForm({ idx, url, isPlaying, isActive, currentTime, s
     function playPause() {
         if (wavesurfer) {
             if (isPlaying === true) {
-                if (currentTime) {
-                    log(`Setting time to ${currentTime} and playing...`);
-                    wavesurfer.setTime(currentTime);
+                if (audioPlayerStore.currentTime) {
+                    log(`Setting time to ${audioPlayerStore.currentTime} and playing...`);
+                    wavesurfer.setTime(audioPlayerStore.currentTime);
                 }
                 wavesurfer.play();
             } else {
@@ -81,10 +82,10 @@ export default function WaveForm({ idx, url, isPlaying, isActive, currentTime, s
 
     let timeSubscription;
     useEffect(() => {
-        if (wavesurfer && isActive && setCurrentTime) {
+        if (wavesurfer && isActive && audioPlayerStore.setCurrentTime) {
             timeSubscription = wavesurfer.on('timeupdate', (time: number) => {
                 if (isActive) {
-                    setCurrentTime(idx, time);
+                    audioPlayerStore.setCurrentTime(time);
                 }
             });
         } else if (timeSubscription) {

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import WaveForm from './WaveForm';
-import { Button } from '@fluentui/react-components';
+import { useAudioPlayerStore } from './AudioPlayerStore';
+import { PlayPauseButton } from './PlayPauseButton';
 
 type Props = {
     urls: string[],
@@ -11,35 +12,13 @@ type Props = {
 
 export default function AudioMultiPlayer({ urls, selectedTrack, height, options }: Props) {
 
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [currentTime, setCurrentTime] = useState(0);
-
-    const log = (...msgs) => {
-        console.log("AudioMultiPlayer", ...msgs);
-    }
-
-    function onPlayClick() {
-        log("Setting play state:", !isPlaying);
-        setIsPlaying(!isPlaying);
-    }
-
-    function updateCurrentTime(idx: number, time: number) {
-        setCurrentTime(time);
-    }
-
-    const playIconStyle = {
-        color: '#000',
-        fontSize: height,
-    };
-    const icon = isPlaying ?
-        <Button onClick={onPlayClick}>Pause</Button> :
-        <Button onClick={onPlayClick}>Play</Button>;
+    const audioPlayerStore = useAudioPlayerStore();
 
     function renderWaveforms() {
         return urls.map((url, idx) => {
             if (url !== null) {
                 const isActive = idx === selectedTrack;
-                const _isPlaying = isActive && isPlaying;
+                const _isPlaying = isActive && audioPlayerStore.isPlaying;
                 const _options = { ...options, height: height };
                 return (
                     <WaveForm
@@ -48,8 +27,6 @@ export default function AudioMultiPlayer({ urls, selectedTrack, height, options 
                         url={url}
                         isPlaying={_isPlaying}
                         isActive={isActive}
-                        currentTime={currentTime}
-                        setCurrentTime={updateCurrentTime}
                         options={_options}
                     />
                 );
@@ -59,7 +36,7 @@ export default function AudioMultiPlayer({ urls, selectedTrack, height, options 
 
     return (
         <div>
-            <div>{icon}</div>
+            <PlayPauseButton />
             <div>
                 {renderWaveforms()}
             </div>

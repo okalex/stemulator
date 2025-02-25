@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React from 'react';
 import WaveForm from './WaveForm';
-import { Button } from '@fluentui/react-components';
+import { useAudioPlayerStore } from './AudioPlayerStore';
+import { PlayPauseButton } from './PlayPauseButton';
 
 type Props = {
     url: string,
@@ -10,24 +11,7 @@ type Props = {
 
 export default function AudioPlayer({ url, height, options }: Props) {
 
-    const [isPlaying, setIsPlaying] = useState(false);
-
-    function log(...msgs) {
-        console.log("AudioPlayer", ...msgs);
-    }
-
-    function onPlayClick() {
-        log("Setting play state:", !isPlaying);
-        setIsPlaying(!isPlaying);
-    }
-
-    const iconStyle = {
-        color: '#000',
-        fontSize: height,
-    };
-    const icon = isPlaying ?
-        <Button onClick={onPlayClick}>Pause</Button> :
-        <Button onClick={onPlayClick}>Play</Button>;
+    const audioPlayerStore = useAudioPlayerStore();
 
     const _options = {
         ...options,
@@ -36,9 +20,9 @@ export default function AudioPlayer({ url, height, options }: Props) {
 
     return (
         <div>
-            <div>{icon}</div>
+            <PlayPauseButton />
             <div>
-                <WaveForm idx={0} url={url} isPlaying={isPlaying} options={_options} />
+                <WaveForm idx={0} url={url} isPlaying={audioPlayerStore.isPlaying} options={_options} />
             </div>
         </div>
     );
