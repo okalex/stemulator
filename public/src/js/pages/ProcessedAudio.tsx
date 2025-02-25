@@ -3,12 +3,13 @@ import { AudioMultiPlayer } from '../components/AudioPlayer';
 import { DraggableBox } from '../components/DraggableBox';
 import { Button, Text } from '@fluentui/react-components';
 import { useAppStore } from '../stores/AppStore';
+import { useAudioPlayerStore } from '../components/AudioPlayer/AudioPlayerStore';
+import { TrackSelector } from '../components/AudioPlayer/TrackSelector';
 
 export default function ProcessedAudio() {
 
-    const appStore = useAppStore()
-
-    const [selectedTrack, setSelectedTrack] = React.useState(0) as [number, (track: number) => void];
+    const appStore = useAppStore();
+    const audioPlayerStore = useAudioPlayerStore();
 
     const waveHeight = 80;
 
@@ -23,43 +24,9 @@ export default function ProcessedAudio() {
     function handleCopyFile(event) {
         event.preventDefault();
 
-        const fileUrl = appStore.processedFiles[selectedTrack].path;
+        const fileUrl = appStore.processedFiles[audioPlayerStore.selectedTrack].path;
         console.log("Copying file...", fileUrl);
         window.api.copyToClipboard(fileUrl);
-    }
-
-    function changeSelection(idx) {
-        return (event) => {
-            event.preventDefault();
-            if (idx !== selectedTrack) {
-                console.log("Changing selection to", idx);
-                setSelectedTrack(idx);
-            }
-        };
-    }
-
-    function button(idx: number, name: string) {
-        const variant = idx === selectedTrack ? "contained" : "outlined";
-        return (
-            <Button key={idx} onClick={changeSelection(idx)}>
-                {name}
-            </Button>
-        )
-    }
-
-    function selectButtons() {
-        const buttons = [];
-        ["orig", "vocals", "bass", "drums", "other"].forEach((track, idx) => {
-            if (appStore.processedFiles[track]) {
-                buttons.push(button(idx, track))
-            }
-        })
-
-        return (
-            <div>
-                {buttons}
-            </div>
-        );
     }
 
     return (
@@ -69,11 +36,11 @@ export default function ProcessedAudio() {
             </div>
 
             <div>
-                {selectButtons()}
+                <TrackSelector />
             </div>
 
             <div>
-                <AudioMultiPlayer urls={fileUrls} selectedTrack={selectedTrack} height={waveHeight} />
+                <AudioMultiPlayer urls={fileUrls} height={waveHeight} />
             </div>
 
             <div>
@@ -81,7 +48,7 @@ export default function ProcessedAudio() {
                     Copy
                 </Button>
 
-                <DraggableBox dragData={fileUrls[selectedTrack]}>
+                <DraggableBox dragData={fileUrls[audioPlayerStore.selectedTrack]}>
                     <Button>
                         Drag
                     </Button>

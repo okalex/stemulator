@@ -6,6 +6,9 @@ type AudioPlayerStore = {
 
   currentTime: number;
   setCurrentTime: (time: number) => void;
+
+  selectedTrack: number;
+  setSelectedTrack: (track: number) => void;
 }
 
 export const useAudioPlayerStore = create<AudioPlayerStore>((set) => ({
@@ -14,4 +17,7 @@ export const useAudioPlayerStore = create<AudioPlayerStore>((set) => ({
 
   currentTime: 0,
   setCurrentTime: (time: number) => set({ currentTime: time }),
+
+  selectedTrack: 0,
+  setSelectedTrack: (track: number) => set({ selectedTrack: track }),
 }));

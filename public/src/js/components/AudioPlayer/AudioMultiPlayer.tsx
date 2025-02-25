@@ -5,19 +5,18 @@ import { PlayPauseButton } from './PlayPauseButton';
 
 type Props = {
     urls: string[],
-    selectedTrack: number,
     height: any,
     options?: object,
 }
 
-export default function AudioMultiPlayer({ urls, selectedTrack, height, options }: Props) {
+export default function AudioMultiPlayer({ urls, height, options }: Props) {
 
     const audioPlayerStore = useAudioPlayerStore();
 
     function renderWaveforms() {
         return urls.map((url, idx) => {
             if (url !== null) {
-                const isActive = idx === selectedTrack;
+                const isActive = idx === audioPlayerStore.selectedTrack;
                 const _isPlaying = isActive && audioPlayerStore.isPlaying;
                 const _options = { ...options, height: height };
                 return (
