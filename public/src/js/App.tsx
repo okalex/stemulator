@@ -8,6 +8,8 @@ import FileOverview from './pages/FileOverview';
 import Processing from './pages/Processing';
 import ProcessedAudio from './pages/ProcessedAudio';
 import { useAppStore } from './stores/AppStore';
+import { makeStyles } from '@fluentui/react-components';
+import { useAppStyles } from './styles/appStyles';
 
 require('./global');
 
@@ -18,6 +20,7 @@ export type OutputObject = {
 
 function Main() {
     const appStore = useAppStore();
+    const styles = useAppStyles();
 
     function render(): JSX.Element {
         if (appStore.isProcessed) {
@@ -34,7 +37,7 @@ function Main() {
     }
 
     return (
-        <div>
+        <div className={styles.main}>
             {render()}
         </div>
     );

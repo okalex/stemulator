@@ -4,6 +4,7 @@ import WaveSurfer, { WaveSurferOptions } from 'wavesurfer.js';
 import { useAudioPlayerStore } from './AudioPlayerStore';
 
 type Props = {
+    className?: any,
     idx: number,
     url: string,
     isPlaying: boolean,
@@ -11,7 +12,7 @@ type Props = {
     options?: object,
 }
 
-export default function WaveForm({ idx, url, isPlaying, isActive, options }: Props) {
+export default function WaveForm({ className, idx, url, isPlaying, isActive, options }: Props) {
 
     const audioPlayerStore = useAudioPlayerStore();
 
@@ -94,7 +95,7 @@ export default function WaveForm({ idx, url, isPlaying, isActive, options }: Pro
     }, [wavesurfer, isActive]);
 
     return (
-        <div ref={ref} />
+        <div className={className} ref={ref} />
     );
 
 }

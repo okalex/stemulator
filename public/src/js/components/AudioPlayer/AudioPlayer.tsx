@@ -2,6 +2,7 @@ import React from 'react';
 import WaveForm from './WaveForm';
 import { useAudioPlayerStore } from './AudioPlayerStore';
 import { PlayPauseButton } from './PlayPauseButton';
+import { useAppStyles } from '../../styles/appStyles';
 
 type Props = {
     url: string,
@@ -12,6 +13,7 @@ type Props = {
 export default function AudioPlayer({ url, height, options }: Props) {
 
     const audioPlayerStore = useAudioPlayerStore();
+    const styles = useAppStyles();
 
     const _options = {
         ...options,
@@ -21,9 +23,7 @@ export default function AudioPlayer({ url, height, options }: Props) {
     return (
         <div>
             <PlayPauseButton />
-            <div>
-                <WaveForm idx={0} url={url} isPlaying={audioPlayerStore.isPlaying} options={_options} />
-            </div>
+            <WaveForm idx={0} url={url} isPlaying={audioPlayerStore.isPlaying} options={_options} />
         </div>
     );
 }

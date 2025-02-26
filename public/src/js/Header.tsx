@@ -10,7 +10,6 @@ export default function Header() {
     return (
         <div>
             <Title1>Stemulator</Title1>
-            <Text>{getFileNameFromPath(appStore.currentFile)}</Text>
         </div>
     );
 };
