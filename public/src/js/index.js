@@ -1,10 +1,11 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { FluentProvider, webLightTheme } from '@fluentui/react-components';
+import '../css/index.css';
 import App from './App';
 
-createRoot(document.getElementById('root')).render(
-    <FluentProvider theme={webLightTheme}>
+const root = createRoot(document.getElementById('root'));
+root.render(
+    <React.StrictMode>
         <App tab="home" />
-    </FluentProvider>
+    </React.StrictMode>
 );

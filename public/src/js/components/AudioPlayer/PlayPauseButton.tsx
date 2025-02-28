@@ -1,7 +1,7 @@
 import React from 'react';
-import { Button } from "@fluentui/react-components";
 import { useAudioPlayerStore } from "./AudioPlayerStore";
-import { PauseFilled, PlayFilled } from '@fluentui/react-icons';
+import { FaCirclePause, FaCirclePlay } from "react-icons/fa6";
+import { Button } from '@material-tailwind/react';
 
 type Props = {
   className?: any,
@@ -16,10 +16,10 @@ export function PlayPauseButton({ className }: Props) {
     audioPlayerStore.setPlaying(!audioPlayerStore.isPlaying)
   }
 
-  const icon = audioPlayerStore.isPlaying ? <PauseFilled /> : <PlayFilled />;
+  const icon = audioPlayerStore.isPlaying ? <FaCirclePause size="4em" /> : <FaCirclePlay size="4em" />;
 
   return (
-    <Button onClick={onClick} appearance="primary" shape="circular" size="large" icon={icon} className={className} />
+    <Button variant="ghost" onClick={onClick} size="xl">{icon}</Button>
   );
 
 }

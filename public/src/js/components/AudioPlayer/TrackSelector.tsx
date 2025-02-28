@@ -1,5 +1,4 @@
 import React from "react";
-import { Button } from "@fluentui/react-components";
 import { useAppStore } from "../../stores/AppStore";
 import { useAudioPlayerStore } from "./AudioPlayerStore";
 
@@ -20,10 +19,10 @@ export function TrackSelector() {
 
   function button(idx: number, name: string) {
     const variant = idx === audioPlayerStore.selectedTrack ? "contained" : "outlined";
-    return (
-      <Button key={idx} onClick={changeSelection(idx)}>
-        {name}
-      </Button>
+    return (<div />
+      // <Button key={idx} onClick={changeSelection(idx)}>
+      //   {name}
+      // </Button>
     )
   }
 
@@ -35,8 +34,9 @@ export function TrackSelector() {
   })
 
   return (
-    <div>
-      {buttons}
-    </div>
+    <div />
+    // <ButtonGroup>
+    //   {buttons}
+    // </ButtonGroup>
   );
 }

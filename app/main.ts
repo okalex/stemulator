@@ -5,6 +5,7 @@ import IpcMain from './ipc/IpcMain';
 import log from 'electron-log/main';
 import fixPath from 'fix-path';
 import { installModels } from './install';
+import fs from 'fs';
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
@@ -25,16 +26,30 @@ if (app.isPackaged) {
   installModels();
 }
 
-// Auto-reload
-// if (process.env.NODE_ENV === 'development') {
-//   require('electron-reload')(path.join(__dirname, '/app'));
-// }
+function isDev(): boolean {
+  return process.env.NODE_ENV === 'development';
+}
+
+// Hot reload
+if (isDev() && process.env.ELECTRON_HMR === 'true') {
+  console.log('Setting up file watcher for hot reload');
+  const distDir = path.join(__dirname, '../dist');
+
+  fs.watch(distDir, { recursive: true }, (eventType, filename) => {
+    if (filename && (filename.endsWith('.js') || filename.endsWith('.css'))) {
+      console.log(`File changed: ${filename}, reloading window...`);
+      BrowserWindow.getAllWindows().forEach((window) => {
+        window.webContents.reloadIgnoringCache();
+      });
+    }
+  });
+}
 
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     width: 1000,
-    height: 600,
+    height: isDev() ? 1000 : 600,
     webPreferences: {
       preload: path.join(__dirname, './preload.js'),
       nodeIntegration: false, // TODO: This is a security vulnerability: https://stackoverflow.com/questions/44391448/electron-require-is-not-defined
@@ -43,10 +58,25 @@ const createWindow = () => {
   });
 
   // and load the index.html of the app.
-  mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
+  // if (isDev()) {
+  //   mainWindow.loadURL('http://localhost:8080');
+  // } else {
+  //   mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
+  // }
+
+  if (isDev()) {
+    console.log('Loading from dev server: http://localhost:8080');
+    mainWindow.loadURL('http://localhost:8080');
+  } else {
+    const indexPath = path.join(__dirname, '../dist/index.html');
+    console.log(`Loading from file: ${indexPath}`);
+    mainWindow.loadFile(indexPath);
+  }
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
+  if (isDev()) {
+    mainWindow.webContents.openDevTools();
+  }
 
   return mainWindow;
 };

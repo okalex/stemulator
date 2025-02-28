@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 
 import WaveSurfer, { WaveSurferOptions } from 'wavesurfer.js';
 import { useAudioPlayerStore } from './AudioPlayerStore';
+import colors from 'tailwindcss/colors'
 
 type Props = {
     className?: any,
@@ -23,9 +24,10 @@ export default function WaveForm({ className, idx, url, isPlaying, isActive, opt
     const ref = useRef();
     const [wavesurfer, setWavesurfer] = useState(null);
 
+    console.log('colors', colors);
     const defaultOptions: object = {
-        waveColor: '#000',
-        progressColor: '#000',
+        waveColor: colors.gray[800],
+        progressColor: colors.gray[500],
         url: url,
     };
 

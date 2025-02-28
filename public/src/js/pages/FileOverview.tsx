@@ -1,15 +1,13 @@
 import React from 'react';
 import { AudioPlayer } from '../components/AudioPlayer';
-import { Button, Card, CardFooter, CardHeader, CardPreview, Title2 } from '@fluentui/react-components';
 import { useAppStore } from '../stores/AppStore';
 import { Model } from '../components/ModelSelector/Model';
-import { useAppStyles } from '../styles/appStyles';
 import { getFileNameFromPath } from '../utils/files';
+import { Button, Typography } from '@material-tailwind/react';
 
 export default function FileOverview() {
 
     const appStore = useAppStore();
-    const styles = useAppStyles();
 
     function handleProcess(): void {
         console.log("handleProcess", appStore.currentFile);
@@ -23,13 +21,13 @@ export default function FileOverview() {
 
     return (
         <div>
-            <Card className={styles.card}>
-                <Title2>{getFileNameFromPath(appStore.currentFile)}</Title2>
+            <div>
+                <Typography type="h2">{getFileNameFromPath(appStore.currentFile)}</Typography>
                 <AudioPlayer height={80} url={appStore.currentFile} />
-            </Card>
+            </div>
 
-            <Button onClick={handleProcess} appearance="primary">Process</Button>
-            <Button onClick={handleCancel} appearance="secondary">Cancel</Button>
+            <Button variant="solid" onClick={handleProcess}>Process</Button>
+            <Button variant="outline" onClick={handleCancel}>Cancel</Button>
         </div>
     );
 

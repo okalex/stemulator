@@ -1,13 +1,11 @@
 import React from 'react';
-import { ProgressBar, Text } from '@fluentui/react-components';
 import { useAppStore } from '../stores/AppStore';
-import { OutputObject } from '../App';
 
 export default function Processing() {
 
     const appStore = useAppStore();
 
-    function handleOutput(output: OutputObject): void {
+    function handleOutput(output: any): void {
         if (output.type === "progress") {
             appStore.setProgress(output.data);
         }
@@ -33,11 +31,11 @@ export default function Processing() {
     return (
         <div>
             <div>
-                <ProgressBar value={appStore.progress / 100} />
+                {/* <Progress value={appStore.progress} /> */}
             </div>
 
             <div>
-                <Text>Processing audio… {appStore.progress}%</Text>
+                Processing audio… {appStore.progress}%
             </div>
         </div>
     );

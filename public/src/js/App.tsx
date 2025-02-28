@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
@@ -8,19 +8,12 @@ import FileOverview from './pages/FileOverview';
 import Processing from './pages/Processing';
 import ProcessedAudio from './pages/ProcessedAudio';
 import { useAppStore } from './stores/AppStore';
-import { makeStyles } from '@fluentui/react-components';
-import { useAppStyles } from './styles/appStyles';
+import { hot } from 'react-hot-loader/root';
 
 require('./global');
 
-export type OutputObject = {
-    type: string,
-    data: any
-};
-
 function Main() {
     const appStore = useAppStore();
-    const styles = useAppStyles();
 
     function render(): JSX.Element {
         if (appStore.isProcessed) {
@@ -37,13 +30,13 @@ function Main() {
     }
 
     return (
-        <div className={styles.main}>
+        <div>
             {render()}
         </div>
     );
 }
 
-export default function App() {
+function App() {
     return (
         <DndProvider backend={HTML5Backend}>
             <Header />
@@ -51,3 +44,5 @@ export default function App() {
         </DndProvider>
     );
 };
+
+export default hot(App);

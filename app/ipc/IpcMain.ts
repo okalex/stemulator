@@ -1,9 +1,9 @@
 import { app, clipboard, ipcMain } from "electron";
 import { Model } from "../../public/src/js/components/ModelSelector/Model";
 import { IpcChannel } from "./IpcChannel";
-import { OutputObject } from "../../public/src/js/App";
 import { readFile } from "fs";
 import plist from "plist";
+import { OutputObject } from "../../types/OutputObject";
 
 export default class IpcMain {
     event: any;

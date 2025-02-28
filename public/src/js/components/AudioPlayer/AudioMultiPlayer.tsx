@@ -2,7 +2,6 @@ import React from 'react';
 import WaveForm from './WaveForm';
 import { useAudioPlayerStore } from './AudioPlayerStore';
 import { PlayPauseButton } from './PlayPauseButton';
-import { useAppStyles } from '../../styles/appStyles';
 
 type Props = {
     urls: string[],
@@ -13,7 +12,6 @@ type Props = {
 export default function AudioMultiPlayer({ urls, height, options }: Props) {
 
     const audioPlayerStore = useAudioPlayerStore();
-    const styles = useAppStyles();
 
     function renderWaveforms() {
         return urls.map((url, idx) => {

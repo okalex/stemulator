@@ -2,19 +2,15 @@ const webpack = require('webpack')
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-const defaultInclude = path.resolve(__dirname, 'public/src/js')
-
 module.exports = [
   {
     mode: 'development',
     target: 'electron-preload',
     entry: './app/preload.ts',
-
     output: {
       path: path.join(__dirname, 'dist'),
       filename: 'preload.js'
     },
-
     module: {
       rules: [
         {
@@ -22,22 +18,19 @@ module.exports = [
           exclude: /node_modules/,
           use: {
             loader: "babel-loader"
-          },
-          include: defaultInclude
+          }
         },
 
         {
           test: /\.(ts|tsx)?$/,
           use: 'ts-loader',
-          exclude: /node_modules/,
+          exclude: /node_modules/
         },
       ]
     },
-
     node: {
       __dirname: false,
     },
-
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
     },
@@ -47,17 +40,14 @@ module.exports = [
     mode: 'development',
     target: 'electron-main',
     entry: './app/main.ts',
-
     output: {
       path: path.join(__dirname, 'dist'),
       filename: 'main.js'
     },
-
     externals: {
       fsevents: "require('fsevents')",
-      '@ffmpeg-installer/ffmpeg': 'commonjs @ffmpeg-installer/ffmpeg' // Prevents Webpack from bundling it
+      '@ffmpeg-installer/ffmpeg': 'commonjs @ffmpeg-installer/ffmpeg'
     },
-
     module: {
       rules: [
         {
@@ -66,7 +56,6 @@ module.exports = [
           use: {
             loader: "babel-loader"
           },
-          include: defaultInclude
         },
 
         {
@@ -76,11 +65,10 @@ module.exports = [
         },
       ]
     },
-
     node: {
       __dirname: false,
+      __filename: false
     },
-
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
     },
@@ -88,19 +76,19 @@ module.exports = [
 
   {
     mode: 'development',
-    target: 'electron-renderer',
-    entry: './public/src/js/index.js',
-
+    target: 'web',
+    entry: [
+      // 'react-hot-loader/patch',
+      './public/src/js/index.js'
+    ],
     output: {
       path: path.resolve(__dirname, 'dist'),
       filename: 'bundle.js',
-      publicPath: '/',
+      publicPath: './',
     },
-
     externals: {
       fsevents: "require('fsevents')"
     },
-
     module: {
       rules: [
         {
@@ -109,19 +97,22 @@ module.exports = [
           use: {
             loader: "babel-loader"
           },
-          include: defaultInclude
+          include: path.resolve(__dirname, 'public/src/js')
         },
 
         {
-          test: /\.(ts|tsx)?$/,
+          test: /\.(ts|tsx)$/,
           use: 'ts-loader',
           exclude: /node_modules/,
         },
 
         {
           test: /\.css$/,
-          use: ['style-loader', 'css-loader'],
-          include: defaultInclude
+          use: [
+            'style-loader',
+            'css-loader',
+            'postcss-loader',
+          ],
         },
 
         {
@@ -134,29 +125,32 @@ module.exports = [
               },
             },
           ],
-          include: defaultInclude
+        },
+        {
+          test: /\.(woff(2)?|eot|ttf|otf)$/,
+          type: 'asset/resource',
+          generator: {
+            filename: 'fonts/[name][ext]'
+          },
         },
       ]
     },
-
     plugins: [
       new HtmlWebpackPlugin({
-        template: path.resolve(__dirname, 'public/index.html'),
+        template: path.resolve(__dirname, 'public/src/html/index.html'),
         filename: 'index.html'
       }),
-
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify('development')
-      })
+      }),
+      new webpack.HotModuleReplacementPlugin()
     ],
-
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      // alias: {
+      //   'react-dom': '@hot-loader/react-dom'
+      // },
     },
-
-    devServer: {
-      hot: true,
-      historyApiFallback: true,
-    }
+    devtool: 'eval-source-map',
   }
 ];

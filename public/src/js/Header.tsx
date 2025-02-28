@@ -1,7 +1,6 @@
 import React from 'react';
-import { Text, Title1 } from '@fluentui/react-components';
 import { useAppStore } from './stores/AppStore';
-import { getFileNameFromPath } from './utils/files';
+import { Typography } from '@material-tailwind/react';
 
 export default function Header() {
 
@@ -9,7 +8,7 @@ export default function Header() {
 
     return (
         <div>
-            <Title1>Stemulator</Title1>
+            <Typography type="h1" className="text-red-500">Stemulator</Typography>
         </div>
     );
 };

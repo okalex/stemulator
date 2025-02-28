@@ -1,8 +1,6 @@
 import { ipcRenderer } from "electron";
-import { Model } from "../../public/src/js/components/ModelSelector/Model";
-import { OutputObject } from "../../public/src/js/App";
 import { IpcChannel } from "./IpcChannel";
-import { FileObject } from "../../public/src/js/types/FileObject";
+import { OutputObject } from "../../types/OutputObject";
 
 export default class IpcRenderer {
 
@@ -11,7 +9,7 @@ export default class IpcRenderer {
         return ipcRenderer.invoke(IpcChannel.GET_ROOT_PATH);
     }
 
-    static processAudio(file: string, model: Model): void {
+    static processAudio(file: string, model: string): void {
         console.log("IpcRenderer.processAudio", file, model);
         ipcRenderer.invoke(IpcChannel.PROCESS_AUDIO, file, model);
     }

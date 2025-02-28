@@ -1,7 +1,6 @@
 import React from 'react';
 import { AudioMultiPlayer } from '../components/AudioPlayer';
 import { DraggableBox } from '../components/DraggableBox';
-import { Button } from '@fluentui/react-components';
 import { useAppStore } from '../stores/AppStore';
 import { useAudioPlayerStore } from '../components/AudioPlayer/AudioPlayerStore';
 import { TrackSelector } from '../components/AudioPlayer/TrackSelector';
@@ -40,14 +39,14 @@ export default function ProcessedAudio() {
             </div>
 
             <div>
-                <Button onClick={handleCopyFile}>
+                <button onClick={handleCopyFile}>
                     Copy
-                </Button>
+                </button>
 
                 <DraggableBox dragData={fileUrls[audioPlayerStore.selectedTrack]}>
-                    <Button>
+                    <button>
                         Drag
-                    </Button>
+                    </button>
                 </DraggableBox>
             </div>
         </div>
