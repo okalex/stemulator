@@ -44,17 +44,13 @@ const createWindow = () => {
   });
 
   if (isDev()) {
-    console.log('Loading from dev server: http://localhost:8080');
+    log.info('Loading from dev server: http://localhost:8080');
     mainWindow.loadURL('http://localhost:8080');
+    mainWindow.webContents.openDevTools();
   } else {
     const indexPath = path.join(__dirname, '../dist/index.html');
-    console.log(`Loading from file: ${indexPath}`);
+    log.info(`Loading from file: ${indexPath}`);
     mainWindow.loadFile(indexPath);
-  }
-
-  // Open the DevTools.
-  if (isDev()) {
-    mainWindow.webContents.openDevTools();
   }
 
   return mainWindow;

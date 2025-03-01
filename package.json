@@ -6,9 +6,9 @@
   "main": "./dist/main.js",
   "scripts": {
     "build": "webpack build",
-    "dev": "node start-dev.js",
+    "dev": "webpack build && node start-dev.js",
     "start": "NODE_ENV=development electron .",
-    "package": "electron-forge package",
+    "package": "NODE_ENV=production webpack build --mode production && electron-forge package",
     "package-x64": "electron-forge package --arch=x64 --platform=darwin",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
