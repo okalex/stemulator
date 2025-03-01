@@ -3,6 +3,7 @@ import React, { useEffect, useState, useCallback, useRef } from 'react';
 import WaveSurfer, { WaveSurferOptions } from 'wavesurfer.js';
 import { useAudioPlayerStore } from './AudioPlayerStore';
 import colors from 'tailwindcss/colors'
+import moment from 'moment';
 
 type Props = {
     className?: any,
@@ -17,9 +18,7 @@ export default function WaveForm({ className, idx, url, isPlaying, isActive, opt
 
     const audioPlayerStore = useAudioPlayerStore();
 
-    const _url = url && url.startsWith('/')
-        ? `file://${url}`
-        : url;
+    isActive = isActive === undefined ? true : isActive;
 
     function log(...msgs) {
         console.log(`WaveForm[${idx}]`, ...msgs);
@@ -27,8 +26,8 @@ export default function WaveForm({ className, idx, url, isPlaying, isActive, opt
 
     const ref = useRef();
     const [wavesurfer, setWavesurfer] = useState(null);
+    const [duration, setDuration] = useState(0);
 
-    console.log('colors', colors);
     const defaultOptions: object = {
         waveColor: '#ff4e00',
         progressColor: '#dd5e98',
@@ -37,13 +36,7 @@ export default function WaveForm({ className, idx, url, isPlaying, isActive, opt
         cursorWidth: 2,
         barWidth: 2,
         barRadius: 10,
-        url: _url,
     };
-
-    let _class = className;
-    if (isActive === false) {
-        _class += ' hidden';
-    }
 
     // Create wavesurfer
     useEffect(() => {
@@ -53,11 +46,12 @@ export default function WaveForm({ className, idx, url, isPlaying, isActive, opt
             const wavesurferOptions: WaveSurferOptions = {
                 ...defaultOptions,
                 ...options,
+                url: url && url.startsWith('/') ? `file://${url}` : url,
                 container: ref.current,
             };
             log("Creating wavesurfer...", wavesurferOptions);
             const ws = WaveSurfer.create(wavesurferOptions);
-            setWavesurfer(ws)
+            setWavesurfer(ws);
 
             return () => {
                 ws.destroy()
@@ -72,6 +66,10 @@ export default function WaveForm({ className, idx, url, isPlaying, isActive, opt
             const wsSubscriptions = [
                 // wavesurfer.on('play', () => setIsPlaying(true)),
                 // wavesurfer.on('pause', () => setIsPlaying(false)),
+                wavesurfer.on('ready', () => {
+                    log("Waveform ready...");
+                    setDuration(wavesurfer.getDuration());
+                }),
             ];
 
             return () => {
@@ -98,7 +96,7 @@ export default function WaveForm({ className, idx, url, isPlaying, isActive, opt
 
     let timeSubscription;
     useEffect(() => {
-        if (wavesurfer && isActive && audioPlayerStore.setCurrentTime) {
+        if (wavesurfer && isActive) {
             timeSubscription = wavesurfer.on('timeupdate', (time: number) => {
                 if (isActive) {
                     audioPlayerStore.setCurrentTime(time);
@@ -110,8 +108,15 @@ export default function WaveForm({ className, idx, url, isPlaying, isActive, opt
         }
     }, [wavesurfer, isActive]);
 
+    const theDuration = moment(duration * 1000).format("m:ss");
+    const theCurrentTime = moment(audioPlayerStore.currentTime * 1000).format("m:ss");
+
     return (
-        <div className={_class} ref={ref} />
+        <div className={`relative ${className}`}>
+            <div className={isActive === false && 'hidden'} ref={ref} />
+            {isActive && (<span className="text-xs text-gray-500 absolute left-0">{theCurrentTime}</span>)}
+            {isActive && (<span className="text-xs text-gray-500 absolute right-0">{theDuration}</span>)}
+        </div>
     );
 
 }

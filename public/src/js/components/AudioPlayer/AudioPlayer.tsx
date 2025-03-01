@@ -21,7 +21,7 @@ export default function AudioPlayer({ className, url, height, options }: Props) 
     }
 
     return (
-        <Row className={`items-center ${className}`}>
+        <Row className={`items-center pb-4 ${className}`}>
             <PlayPauseButton size="3em" className="text-primary mr-4" />
             <WaveForm idx={0} url={url} isPlaying={audioPlayerStore.isPlaying} options={_options} className="grow" />
         </ Row>

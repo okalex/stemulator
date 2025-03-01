@@ -50,17 +50,17 @@ export default function ProcessedAudio() {
                         <AudioMetadata className="w-full" />
 
                         <Row>
-                            <AudioMultiPlayer urls={fileUrls} height={waveHeight} className="grow" />
-
-                            <Button onClick={handleCopyFile} className="h-12 ml-4 mt-auto mb-auto">
-                                <FaCopy />
-                            </Button>
-
-                            <DraggableBox dragData={fileUrls[audioPlayerStore.selectedTrack]} className="h-12 ml-4 mt-auto mb-auto">
-                                <Button className="h-12">
-                                    <FaGripVertical />
+                            <AudioMultiPlayer urls={fileUrls} height={waveHeight} className="grow">
+                                <Button onClick={handleCopyFile} className="h-12 ml-4 mt-auto mb-auto">
+                                    <FaCopy />
                                 </Button>
-                            </DraggableBox>
+
+                                <DraggableBox dragData={fileUrls[audioPlayerStore.selectedTrack]} className="h-12 ml-4 mt-auto mb-auto">
+                                    <Button className="h-12">
+                                        <FaGripVertical />
+                                    </Button>
+                                </DraggableBox>
+                            </AudioMultiPlayer>
                         </Row>
                     </CardBody>
                 </Card>

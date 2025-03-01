@@ -9,9 +9,10 @@ type Props = {
     urls: string[],
     height: any,
     options?: object,
+    children?: any,
 }
 
-export default function AudioMultiPlayer({ className, urls, height, options }: Props) {
+export default function AudioMultiPlayer({ className, urls, height, options, children }: Props) {
 
     const audioPlayerStore = useAudioPlayerStore();
 
@@ -36,11 +37,12 @@ export default function AudioMultiPlayer({ className, urls, height, options }: P
     }
 
     return (
-        <Row className={`items-center ${className}`}>
+        <Row className={`items-center pb-4 ${className}`}>
             <PlayPauseButton size="3em" className="text-primary mr-4" />
             <div className="grow">
                 {renderWaveforms()}
             </div>
+            {children ?? null}
         </Row>
     );
 }

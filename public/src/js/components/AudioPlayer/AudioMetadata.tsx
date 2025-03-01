@@ -19,9 +19,8 @@ export default function AudioMetadata({ className }: Props) {
       </div>
 
       <div className="grow ml-4">
-        <Typography>Artist: {artist}</Typography>
-        <Typography>Title: {title}</Typography>
-        <Typography>Album: {album}</Typography>
+        <Typography className="font-bold">{title}</Typography>
+        <Typography className="text-gray-500">{artist}</Typography>
       </div>
     </Row>
   );
