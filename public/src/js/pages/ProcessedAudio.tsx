@@ -9,6 +9,7 @@ import { Button, Card, CardBody, Typography } from '@material-tailwind/react';
 import { getFileNameFromPath } from '../utils/files';
 import { FaCopy, FaGripVertical } from 'react-icons/fa6';
 import PageTitle from '../components/Base/PageTitle';
+import AudioMetadata from '../components/AudioPlayer/AudioMetadata';
 
 export default function ProcessedAudio() {
 
@@ -42,8 +43,12 @@ export default function ProcessedAudio() {
                     <TrackSelector />
                 </div>
 
+
                 <Card className="bg-gray-50">
                     <CardBody>
+
+                        <AudioMetadata className="w-full" />
+
                         <Row>
                             <AudioMultiPlayer urls={fileUrls} height={waveHeight} className="grow" />
 

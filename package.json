@@ -24,6 +24,7 @@
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "@fontsource-variable/inter": "^5.1.1",
     "@material-tailwind/react": "^3.0.0-beta.24",
+    "album-art": "^4.0.0",
     "electron-log": "^5.3.0",
     "electron-reload": "^2.0.0-alpha.1",
     "electron-squirrel-startup": "^1.0.0",

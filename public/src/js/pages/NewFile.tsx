@@ -9,6 +9,7 @@ export default function NewFile() {
     function handleDrop(dropped: DroppedFiles): void {
         const file = dropped.files[0].path;
         appStore.setCurrentFile(file);
+        window.api.getMetadata(file);
     }
 
     return (

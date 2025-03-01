@@ -1,6 +1,6 @@
 import { app, BrowserWindow } from 'electron';
 import path from 'path';
-import processAudio from './processAudio';
+import processAudio, { fetchMetadata } from './processAudio';
 import IpcMain from './ipc/IpcMain';
 import log from 'electron-log/main';
 import fixPath from 'fix-path';
@@ -65,6 +65,7 @@ function setupIpcHandlers() {
   IpcMain.handleProcessAudio(processAudio);
   IpcMain.handleDragStart();
   IpcMain.handleCopyToClipboard();
+  IpcMain.handleGetMetadata(fetchMetadata);
 }
 
 // This method will be called when Electron has finished

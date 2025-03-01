@@ -41,7 +41,7 @@ export default function Processing() {
 
             <div>
                 <Progress size="sm" value={appStore.progress}>
-                    <Progress.Bar />
+                    <Progress.Bar className="transition-all" />
                 </Progress>
             </div>
         </div>

@@ -1,6 +1,8 @@
 export enum IpcChannel {
     GET_ROOT_PATH = 'getRootPath',
     PROCESS_AUDIO = 'processAudio',
+    GET_METADATA = 'getMetadata',
+    HANDLE_SET_METADATA = 'handleSetMetadata',
     HANDLE_OUTPUT = 'handleOutput',
     HANDLE_ERROR = 'handleError',
     HANDLE_COMPLETE = 'handleComplete',

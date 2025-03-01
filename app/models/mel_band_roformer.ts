@@ -1,19 +1,15 @@
-import { spawnSync } from 'child_process';
 import { app } from 'electron';
 import path from 'path';
 import log from 'electron-log/main';
 import { copyFile, getFileExtension, getFilenameWithoutExtension, mkdir } from '../utils/files';
 import { spawn, spawnOptions } from '../utils/process';
-import ffmpegPath from '../utils/ffmpeg';
 import fs from 'fs';
+import { quoted } from '../utils/string';
+import { convertToWav } from '../utils/ffmpeg';
 
 let resourcePath = app.getAppPath()
 if (app.isPackaged) {
   resourcePath = path.join(process.resourcesPath, 'app.asar.unpacked');
-}
-
-function quoted(s: string): string {
-  return '"' + s + '"';
 }
 
 function calcProgress(updateProgress: (value: number) => void) {
@@ -42,20 +38,12 @@ function calcProgress(updateProgress: (value: number) => void) {
 
 export default function melBandRoformer(
   file: string,
+  workingDir: string,
   updateProgress: (value: number) => void,
   processingComplete: (files: object) => (exitCode: number) => void
 ): void {
-  const dataDir = app.getPath('userData');
-  log.info("Data path: " + dataDir);
-
   const modelPath = path.join(resourcePath, 'models', 'mel_band_roformer');
   const inference = path.join(modelPath, 'inference');
-
-  const workingDir = path.join(dataDir, 'separated', getFilenameWithoutExtension(file));
-  if (fs.existsSync(workingDir)) {
-    fs.rmdirSync(workingDir, { recursive: true });
-  }
-  mkdir(workingDir);
 
   const modelArgs = [
     '--config_path', quoted(`${modelPath}/configs/config_vocals_mel_band_roformer.yaml`),
@@ -66,11 +54,7 @@ export default function melBandRoformer(
 
   const wavFile = path.join(workingDir, 'orig.wav');
   if (getFileExtension(file) !== 'wav') {
-    log.info(`Converting ${file} to wav...`);
-
-    const ffmpeg = ffmpegPath();
-    const ffmpegArgs = ['-y', '-i', quoted(file), quoted(wavFile)];
-    spawnSync(ffmpeg, ffmpegArgs, spawnOptions());
+    convertToWav(file, wavFile);
   } else {
     copyFile(file, wavFile);
   }

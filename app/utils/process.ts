@@ -1,5 +1,5 @@
 import log from 'electron-log/main';
-import { ChildProcess, SpawnOptions, spawn as _spawn } from 'child_process';
+import { ChildProcess, SpawnOptions, spawn as _spawn, spawnSync as _spawnSync } from 'child_process';
 
 export function spawn(
   processName: string,
@@ -26,6 +26,21 @@ export function spawn(
   });
 
   return process;
+}
+
+export function spawnSync(processName: string, args: string[]) {
+  log.info(`Spawning ${processName}`);
+  const result = _spawnSync(processName, args, spawnOptions());
+
+  if (result.error) {
+    log.error(result.error);
+  }
+
+  if (result.status !== 0) {
+    log.error(`Process ${processName} exited with code ${result.status}`);
+  }
+
+  return result;
 }
 
 export function spawnOptions(cwd?: string): SpawnOptions {

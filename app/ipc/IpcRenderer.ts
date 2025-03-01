@@ -14,6 +14,19 @@ export default class IpcRenderer {
         ipcRenderer.invoke(IpcChannel.PROCESS_AUDIO, file, model);
     }
 
+    static getMetadata(file: string): void {
+        console.log("IpcRenderer.getMetadata", file);
+        ipcRenderer.invoke(IpcChannel.GET_METADATA, file);
+    }
+
+    static handleSetMetadata(callback: (metadata: object) => void): void {
+        const _callback = (event: any, metadata: object) => {
+            console.log("IpcRenderer.handleSetMetadata", metadata);
+            callback(metadata);
+        }
+        ipcRenderer.on(IpcChannel.HANDLE_SET_METADATA, _callback);
+    }
+
     static handleOutput(callback: (output: OutputObject) => void): void {
         const _callback = (event: any, output: OutputObject) => {
             console.log("IpcRenderer.handleOutput", output);

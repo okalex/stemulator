@@ -9,6 +9,9 @@ type AudioPlayerStore = {
 
   selectedTrack: number;
   setSelectedTrack: (track: number) => void;
+
+  metadata: any;
+  setMetadata: (metadata: any) => void;
 }
 
 export const useAudioPlayerStore = create<AudioPlayerStore>((set) => ({
@@ -20,4 +23,7 @@ export const useAudioPlayerStore = create<AudioPlayerStore>((set) => ({
 
   selectedTrack: 0,
   setSelectedTrack: (track: number) => set({ selectedTrack: track }),
+
+  metadata: {},
+  setMetadata: (metadata: any) => set({ metadata }),
 }));

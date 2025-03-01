@@ -26,12 +26,19 @@ export default class IpcMain {
             console.log("Returning root path: ", rootPath);
             return rootPath;
         });
-    };
+    }
 
     static handleProcessAudio(callback: (event: any, file: string, model: Model, outDir: string) => void): void {
         ipcMain.handle(IpcChannel.PROCESS_AUDIO, (event: any, file: string, model: Model, outDir: string) => {
             console.log("Handling processAudio");
             callback(event, file, model, outDir);
+        });
+    }
+
+    static handleGetMetadata(callback: (event: any, file: string) => void): void {
+        ipcMain.handle(IpcChannel.GET_METADATA, (event: any, file: string) => {
+            console.log("Handling getMetadata");
+            return callback(event, file);
         });
     }
 
@@ -70,5 +77,10 @@ export default class IpcMain {
     sendComplete(code: number | null, files: object): void {
         console.log("Sending handleComplete", code, files);
         this.event.sender.send('handleComplete', code, files);
+    }
+
+    sendMetadata(metadata: object): void {
+        console.log("Sending metadata", metadata);
+        this.event.sender.send('handleSetMetadata', metadata);
     }
 }

@@ -3,8 +3,9 @@ import { AudioPlayer } from '../components/AudioPlayer';
 import { useAppStore } from '../stores/AppStore';
 import { Model } from '../components/ModelSelector/Model';
 import { getFileNameFromPath } from '../utils/files';
-import { Button, Card, CardBody, Typography } from '@material-tailwind/react';
+import { Button, Card, CardBody } from '@material-tailwind/react';
 import PageTitle from '../components/Base/PageTitle';
+import AudioMetadata from '../components/AudioPlayer/AudioMetadata';
 
 export default function FileOverview() {
 
@@ -26,6 +27,7 @@ export default function FileOverview() {
 
             <Card className="mt-8 mb-8">
                 <CardBody>
+                    <AudioMetadata className="w-full" />
                     <AudioPlayer height={80} url={appStore.currentFile} />
                 </CardBody>
             </Card>

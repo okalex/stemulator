@@ -9,6 +9,7 @@ import Processing from './pages/Processing';
 import ProcessedAudio from './pages/ProcessedAudio';
 import { useAppStore } from './stores/AppStore';
 import { hot } from 'react-hot-loader/root';
+import { useAudioPlayerStore } from './components/AudioPlayer/AudioPlayerStore';
 
 require('./global');
 
@@ -38,6 +39,15 @@ function Main() {
 }
 
 function App() {
+
+    const audioPlayerStore = useAudioPlayerStore();
+
+    function handleSetMetadata(metadata: object) {
+        audioPlayerStore.setMetadata(metadata);
+    }
+
+    window.api.handleSetMetadata(handleSetMetadata);
+    
     return (
         <DndProvider backend={HTML5Backend}>
             <Header />
