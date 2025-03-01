@@ -12,7 +12,7 @@ export default function NewFile() {
     }
 
     return (
-        <div>
+        <div className="w-[600px] m-auto align-middle">
             <Dropzone onDrop={handleDrop} />
         </div>
     );

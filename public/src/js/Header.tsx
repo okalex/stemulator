@@ -7,8 +7,8 @@ export default function Header() {
     const appStore = useAppStore();
 
     return (
-        <div>
-            <Typography type="h1" className="text-red-500">Stemulator</Typography>
+        <div className="fixed top-0 left-0 w-full h-10 pl-4 bg-gray-800 flex items-center text-secondary font-bold">
+            <Typography className="text-lg">Stemulator</Typography>
         </div>
     );
 };

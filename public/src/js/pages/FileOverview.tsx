@@ -3,7 +3,8 @@ import { AudioPlayer } from '../components/AudioPlayer';
 import { useAppStore } from '../stores/AppStore';
 import { Model } from '../components/ModelSelector/Model';
 import { getFileNameFromPath } from '../utils/files';
-import { Button, Typography } from '@material-tailwind/react';
+import { Button, Card, CardBody, Typography } from '@material-tailwind/react';
+import PageTitle from '../components/Base/PageTitle';
 
 export default function FileOverview() {
 
@@ -20,11 +21,14 @@ export default function FileOverview() {
     }
 
     return (
-        <div>
-            <div>
-                <Typography type="h2">{getFileNameFromPath(appStore.currentFile)}</Typography>
-                <AudioPlayer height={80} url={appStore.currentFile} />
-            </div>
+        <div className="w-full">
+            <PageTitle>{getFileNameFromPath(appStore.currentFile)}</PageTitle>
+
+            <Card className="mt-8 mb-8">
+                <CardBody>
+                    <AudioPlayer height={80} url={appStore.currentFile} />
+                </CardBody>
+            </Card>
 
             <Button variant="solid" onClick={handleProcess}>Process</Button>
             <Button variant="outline" onClick={handleCancel}>Cancel</Button>

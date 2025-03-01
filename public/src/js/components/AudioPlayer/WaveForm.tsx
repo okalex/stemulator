@@ -17,6 +17,10 @@ export default function WaveForm({ className, idx, url, isPlaying, isActive, opt
 
     const audioPlayerStore = useAudioPlayerStore();
 
+    const _url = url && url.startsWith('/')
+        ? `file://${url}`
+        : url;
+
     function log(...msgs) {
         console.log(`WaveForm[${idx}]`, ...msgs);
     }
@@ -26,10 +30,20 @@ export default function WaveForm({ className, idx, url, isPlaying, isActive, opt
 
     console.log('colors', colors);
     const defaultOptions: object = {
-        waveColor: colors.gray[800],
-        progressColor: colors.gray[500],
-        url: url,
+        waveColor: '#ff4e00',
+        progressColor: '#dd5e98',
+        cursorColor: '#ddd5e9',
+        normalize: false,
+        cursorWidth: 2,
+        barWidth: 2,
+        barRadius: 10,
+        url: _url,
     };
+
+    let _class = className;
+    if (isActive === false) {
+        _class += ' hidden';
+    }
 
     // Create wavesurfer
     useEffect(() => {
@@ -97,7 +111,7 @@ export default function WaveForm({ className, idx, url, isPlaying, isActive, opt
     }, [wavesurfer, isActive]);
 
     return (
-        <div className={className} ref={ref} />
+        <div className={_class} ref={ref} />
     );
 
 }

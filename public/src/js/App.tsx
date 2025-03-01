@@ -16,6 +16,7 @@ function Main() {
     const appStore = useAppStore();
 
     function render(): JSX.Element {
+        // return <Processing />;
         if (appStore.isProcessed) {
             return <ProcessedAudio />;
         } else if (appStore.isProcessing) {
@@ -30,7 +31,7 @@ function Main() {
     }
 
     return (
-        <div>
+        <div className="p-4 pt-14 h-screen flex">
             {render()}
         </div>
     );

@@ -2,12 +2,14 @@ import React from 'react';
 import { useAudioPlayerStore } from "./AudioPlayerStore";
 import { FaCirclePause, FaCirclePlay } from "react-icons/fa6";
 import { Button } from '@material-tailwind/react';
+import IconButton from '../Base/IconButton';
 
 type Props = {
   className?: any,
+  size: string
 }
 
-export function PlayPauseButton({ className }: Props) {
+export function PlayPauseButton({ className, size }: Props) {
 
   const audioPlayerStore = useAudioPlayerStore();
 
@@ -16,10 +18,14 @@ export function PlayPauseButton({ className }: Props) {
     audioPlayerStore.setPlaying(!audioPlayerStore.isPlaying)
   }
 
-  const icon = audioPlayerStore.isPlaying ? <FaCirclePause size="4em" /> : <FaCirclePlay size="4em" />;
+  const icon = audioPlayerStore.isPlaying ? <FaCirclePause size={size} /> : <FaCirclePlay size={size} />;
+
+  const hoverColor = audioPlayerStore.isPlaying ? "hover:text-red-700" : "hover:text-green-700";
 
   return (
-    <Button variant="ghost" onClick={onClick} size="xl">{icon}</Button>
+    <IconButton onClick={onClick} className={`${hoverColor} transition-colors duration-300 ${className}`}>
+      {icon}
+    </IconButton>
   );
 
 }

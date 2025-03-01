@@ -2,14 +2,16 @@ import React from 'react';
 import WaveForm from './WaveForm';
 import { useAudioPlayerStore } from './AudioPlayerStore';
 import { PlayPauseButton } from './PlayPauseButton';
+import { Row } from '../Base/Grid';
 
 type Props = {
+    className?: string,
     urls: string[],
     height: any,
     options?: object,
 }
 
-export default function AudioMultiPlayer({ urls, height, options }: Props) {
+export default function AudioMultiPlayer({ className, urls, height, options }: Props) {
 
     const audioPlayerStore = useAudioPlayerStore();
 
@@ -34,11 +36,11 @@ export default function AudioMultiPlayer({ urls, height, options }: Props) {
     }
 
     return (
-        <div>
-            <PlayPauseButton />
-            <div>
+        <Row className={`items-center ${className}`}>
+            <PlayPauseButton size="3em" className="text-primary mr-4" />
+            <div className="grow">
                 {renderWaveforms()}
             </div>
-        </div>
+        </Row>
     );
 }

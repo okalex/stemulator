@@ -1,5 +1,8 @@
 import React from 'react';
 import { useAppStore } from '../stores/AppStore';
+import { Progress, Typography } from '@material-tailwind/react';
+import { getFileNameFromPath } from '../utils/files';
+import PageTitle from '../components/Base/PageTitle';
 
 export default function Processing() {
 
@@ -29,13 +32,17 @@ export default function Processing() {
     window.api.handleComplete(handleComplete);
 
     return (
-        <div>
-            <div>
-                {/* <Progress value={appStore.progress} /> */}
-            </div>
+        <div className="w-full">
+            <PageTitle>{getFileNameFromPath(appStore.currentFile)}</PageTitle>
 
             <div>
                 Processing audio… {appStore.progress}%
+            </div>
+
+            <div>
+                <Progress size="sm" value={appStore.progress}>
+                    <Progress.Bar />
+                </Progress>
             </div>
         </div>
     );

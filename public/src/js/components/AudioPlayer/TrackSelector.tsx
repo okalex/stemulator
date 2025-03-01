@@ -1,6 +1,7 @@
 import React from "react";
 import { useAppStore } from "../../stores/AppStore";
 import { useAudioPlayerStore } from "./AudioPlayerStore";
+import { Button, ButtonGroup } from "@material-tailwind/react";
 
 export function TrackSelector() {
 
@@ -18,11 +19,11 @@ export function TrackSelector() {
   }
 
   function button(idx: number, name: string) {
-    const variant = idx === audioPlayerStore.selectedTrack ? "contained" : "outlined";
-    return (<div />
-      // <Button key={idx} onClick={changeSelection(idx)}>
-      //   {name}
-      // </Button>
+    const variant = idx === audioPlayerStore.selectedTrack ? "solid" : "outline";
+    return (
+      <Button key={idx} variant={variant} onClick={changeSelection(idx)}>
+        {name}
+      </Button>
     )
   }
 
@@ -34,9 +35,8 @@ export function TrackSelector() {
   })
 
   return (
-    <div />
-    // <ButtonGroup>
-    //   {buttons}
-    // </ButtonGroup>
+    <ButtonGroup>
+      {buttons}
+    </ButtonGroup>
   );
 }

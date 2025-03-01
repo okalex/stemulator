@@ -78,8 +78,7 @@ module.exports = [
     mode: 'development',
     target: 'web',
     entry: [
-      // 'react-hot-loader/patch',
-      './public/src/js/index.js'
+      './public/src/js/index.js',
     ],
     output: {
       path: path.resolve(__dirname, 'dist'),
@@ -147,9 +146,6 @@ module.exports = [
     ],
     resolve: {
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
-      // alias: {
-      //   'react-dom': '@hot-loader/react-dom'
-      // },
     },
     devtool: 'eval-source-map',
   }

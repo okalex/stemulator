@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 
 type Props = {
+    className?: string,
     children?: JSX.Element,
     dragData: any,
     ref?: any
 };
 
-export function DraggableBox({ children, dragData, ref }: Props) {
+export function DraggableBox({ className, children, dragData, ref }: Props) {
 
     const [mouseDown, setMouseDown] = useState(false);
 
@@ -25,11 +26,11 @@ export function DraggableBox({ children, dragData, ref }: Props) {
     }
 
     const mouseStyle = {
-        cursor: mouseDown ? "grabbing" : "grab"
+        cursor: mouseDown ? "cursor-grabbing" : "cursor-grab"
     };
 
     return (
-        <div onDragStart={handleDragStart} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} draggable={true} ref={ref}>
+        <div onDragStart={handleDragStart} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} draggable={true} ref={ref} className={`${mouseStyle} ${className}`}>
             {children}
         </div>
     );

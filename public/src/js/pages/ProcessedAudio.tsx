@@ -4,6 +4,11 @@ import { DraggableBox } from '../components/DraggableBox';
 import { useAppStore } from '../stores/AppStore';
 import { useAudioPlayerStore } from '../components/AudioPlayer/AudioPlayerStore';
 import { TrackSelector } from '../components/AudioPlayer/TrackSelector';
+import { Column, Row } from '../components/Base/Grid';
+import { Button, Card, CardBody, Typography } from '@material-tailwind/react';
+import { getFileNameFromPath } from '../utils/files';
+import { FaCopy, FaGripVertical } from 'react-icons/fa6';
+import PageTitle from '../components/Base/PageTitle';
 
 export default function ProcessedAudio() {
 
@@ -29,26 +34,32 @@ export default function ProcessedAudio() {
     }
 
     return (
-        <div>
-            <div>
-                <TrackSelector />
-            </div>
+        <div className="w-full">
+            <Column>
+                <PageTitle>{getFileNameFromPath(appStore.currentFile)}</PageTitle>
 
-            <div>
-                <AudioMultiPlayer urls={fileUrls} height={waveHeight} />
-            </div>
+                <div className="mt-4 mb-8 m-auto">
+                    <TrackSelector />
+                </div>
 
-            <div>
-                <button onClick={handleCopyFile}>
-                    Copy
-                </button>
+                <Card className="bg-gray-50">
+                    <CardBody>
+                        <Row>
+                            <AudioMultiPlayer urls={fileUrls} height={waveHeight} className="grow" />
 
-                <DraggableBox dragData={fileUrls[audioPlayerStore.selectedTrack]}>
-                    <button>
-                        Drag
-                    </button>
-                </DraggableBox>
-            </div>
+                            <Button onClick={handleCopyFile} className="h-12 ml-4 mt-auto mb-auto">
+                                <FaCopy />
+                            </Button>
+
+                            <DraggableBox dragData={fileUrls[audioPlayerStore.selectedTrack]} className="h-12 ml-4 mt-auto mb-auto">
+                                <Button className="h-12">
+                                    <FaGripVertical />
+                                </Button>
+                            </DraggableBox>
+                        </Row>
+                    </CardBody>
+                </Card>
+            </Column>
         </div>
     );
 }

@@ -30,21 +30,6 @@ function isDev(): boolean {
   return process.env.NODE_ENV === 'development';
 }
 
-// Hot reload
-if (isDev() && process.env.ELECTRON_HMR === 'true') {
-  console.log('Setting up file watcher for hot reload');
-  const distDir = path.join(__dirname, '../dist');
-
-  fs.watch(distDir, { recursive: true }, (eventType, filename) => {
-    if (filename && (filename.endsWith('.js') || filename.endsWith('.css'))) {
-      console.log(`File changed: ${filename}, reloading window...`);
-      BrowserWindow.getAllWindows().forEach((window) => {
-        window.webContents.reloadIgnoringCache();
-      });
-    }
-  });
-}
-
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -54,15 +39,9 @@ const createWindow = () => {
       preload: path.join(__dirname, './preload.js'),
       nodeIntegration: false, // TODO: This is a security vulnerability: https://stackoverflow.com/questions/44391448/electron-require-is-not-defined
       contextIsolation: true,
+      webSecurity: isDev() ? false : true // Disable only in dev
     },
   });
-
-  // and load the index.html of the app.
-  // if (isDev()) {
-  //   mainWindow.loadURL('http://localhost:8080');
-  // } else {
-  //   mainWindow.loadFile(path.join(__dirname, '../dist/index.html'));
-  // }
 
   if (isDev()) {
     console.log('Loading from dev server: http://localhost:8080');
