@@ -30,10 +30,19 @@ export default function Dropzone({ onDrop }: Props) {
         [onDrop]
     );
 
-    const boxStyle = {
-        p: 2,
-        border: '1px dashed grey',
-    };
+    function onChange(event: React.ChangeEvent<HTMLInputElement>) {
+        console.log('Files', event.target.files);
+        let files = [];
+        for (let file of event.target.files) {
+            files.push({
+                name: file.name,
+                path: file['path'],
+                size: file.size,
+                type: file.type,
+            });
+        }
+        onDrop({ files } as DroppedFiles);
+    }
 
     return (
         <div ref={drop}>
@@ -47,7 +56,7 @@ export default function Dropzone({ onDrop }: Props) {
                         .mp3 or .wav
                     </p>
                 </div>
-                <input id="dropzone-file" type="file" className="hidden" />
+                <input id="dropzone-file" type="file" className="hidden" onChange={onChange} />
             </label>
         </div>
     );
