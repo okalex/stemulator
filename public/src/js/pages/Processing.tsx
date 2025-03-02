@@ -3,6 +3,7 @@ import { useAppStore } from '../stores/AppStore';
 import { Progress, Typography } from '@material-tailwind/react';
 import { getFileNameFromPath } from '../utils/files';
 import PageTitle from '../components/Base/PageTitle';
+import toast from 'react-hot-toast';
 
 export default function Processing() {
 
@@ -19,14 +20,18 @@ export default function Processing() {
 
     function handleComplete(code: number, files: ProcessedFileObject): void {
         console.log("Processing complete", code, files);
+        appStore.setProcessing(false);
+        window.api.removeListeners();
+
         if (code === 0) {
             appStore.setProcessedFiles(files);
             appStore.setProcessed(true);
+            toast.success("Processing complete");
+        } else {
+            toast.error("Processing failed");
         }
-        window.api.removeListeners();
-        appStore.setProcessing(false);
     }
-    
+
     window.api.removeListeners();
     window.api.handleOutput(handleOutput);
     window.api.handleError(handleError);

@@ -4,10 +4,8 @@ import { useAppStore } from '../stores/AppStore';
 import { useAudioPlayerStore } from '../components/AudioPlayer/AudioPlayerStore';
 import { TrackSelector } from '../components/AudioPlayer/TrackSelector';
 import { Column, Row } from '../components/Base/Grid';
-import { Button, Card, CardBody, Typography } from '@material-tailwind/react';
-import { getFileNameFromPath } from '../utils/files';
-import { FaCopy, FaGripVertical } from 'react-icons/fa6';
-import PageTitle from '../components/Base/PageTitle';
+import { Card, CardBody } from '@material-tailwind/react';
+import { FaCopy } from 'react-icons/fa6';
 import AudioMetadata from '../components/AudioPlayer/AudioMetadata';
 import { AudioPlayer, AudioPlayerControls } from '../components/AudioPlayer/AudioPlayer';
 import AlbumArt from '../components/AudioPlayer/AlbumArt';
@@ -37,11 +35,11 @@ export default function ProcessedAudio() {
     return (
         <div className="w-full">
             <Column>
-                <div className="m-auto">
+                <div className="m-auto mb-2">
                     <TrackSelector />
                 </div>
 
-                <Card className="mt-4 mb-8 p-2">
+                <Card className="mt-4 mb-8 p-2 shadow-lg">
                     <CardBody>
                         <Row className="gap-4">
                             <Column className="grow">

@@ -26,8 +26,9 @@ export function DraggableBox({ className, children, dragData, dragIcon, ref }: P
         setMouseDown(false);
     }
 
-    const mouseStyle = {
-        cursor: mouseDown ? "cursor-grabbing" : "cursor-grab"
+    let mouseStyle = "cursor-grab";
+    if (mouseDown) {
+        mouseStyle = "cursor-grabbing";
     };
 
     return (

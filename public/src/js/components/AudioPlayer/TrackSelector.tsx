@@ -2,11 +2,30 @@ import React from "react";
 import { useAppStore } from "../../stores/AppStore";
 import { useAudioPlayerStore } from "./AudioPlayerStore";
 import { Button, ButtonGroup } from "@material-tailwind/react";
+import { FaAsterisk, FaDrum, FaGuitar, FaMicrophone } from "react-icons/fa6";
+import { GiGuitarBassHead } from "react-icons/gi";
+import { MdPiano } from "react-icons/md";
 
 export function TrackSelector() {
 
   const appStore = useAppStore();
   const audioPlayerStore = useAudioPlayerStore();
+
+  const trackNames = {
+    orig: "Original",
+    vocals: "Vocals",
+    bass: "Bass",
+    drums: "Drums",
+    other: "Instruments",
+  }
+
+  const trackIcons = {
+    orig: <FaAsterisk className="mr-1 text-lg" />,
+    vocals: <FaMicrophone className="mr-1 text-md" />,
+    bass: <GiGuitarBassHead className="mr-1 text-lg" />,
+    drums: <FaDrum className="mr-1 text-lg" />,
+    other: <MdPiano className="mr-1 text-xl" />,
+  }
 
   function changeSelection(idx) {
     return (event) => {
@@ -18,11 +37,15 @@ export function TrackSelector() {
     };
   }
 
+  function isSelected(idx) {
+    return idx === audioPlayerStore.selectedTrack;
+  }
+
   function button(idx: number, name: string) {
-    const variant = idx === audioPlayerStore.selectedTrack ? "solid" : "outline";
+    const variant = isSelected(idx) ? "solid" : "outline";
     return (
       <Button key={idx} variant={variant} onClick={changeSelection(idx)}>
-        {name}
+        {trackIcons[name]} {trackNames[name]}
       </Button>
     )
   }
@@ -35,7 +58,7 @@ export function TrackSelector() {
   })
 
   return (
-    <ButtonGroup>
+    <ButtonGroup className="shadow-md">
       {buttons}
     </ButtonGroup>
   );

@@ -1,8 +1,6 @@
 import React from 'react';
 import { useAudioPlayerStore } from './AudioPlayerStore';
 import { Row } from '../Base/Grid';
-import { Typography } from '@material-tailwind/react';
-import AlbumArt from './AlbumArt';
 import { FaMusic } from 'react-icons/fa6';
 
 type Props = {
@@ -12,7 +10,7 @@ type Props = {
 export default function AudioMetadata({ className }: Props) {
   const audioPlayerStore = useAudioPlayerStore();
 
-  const { artist, title, album, albumArtUrl } = audioPlayerStore.metadata;
+  const { artist, title } = audioPlayerStore.metadata;
 
   return (
     <Row className={className}>

@@ -26,9 +26,7 @@ export default function FileOverview() {
 
     return (
         <div className="w-full">
-            <PageTitle>{getFileNameFromPath(appStore.currentFile)}</PageTitle>
-
-            <Card className="mt-8 mb-8 p-2">
+            <Card className="mt-8 mb-8 p-2 shadow-lg">
                 <CardBody>
                     <Row className="gap-4">
                         <Column className="grow">
