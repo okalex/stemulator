@@ -45,6 +45,7 @@ export async function fetchMetadata(event: any, file: string): Promise<void> {
     const workingDir = initWorkingDir(file);
 
     const metadata = getMetadata(file, workingDir);
+    ipc.sendMetadata(metadata);
 
     const albumArtUrl = await albumArt(metadata.artist, { album: metadata.album, size: 'large' });
     const albumArtPath = path.join(workingDir, 'albumArt.jpg')

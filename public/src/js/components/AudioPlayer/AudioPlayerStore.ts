@@ -1,6 +1,8 @@
 import { create } from "zustand";
 
 type AudioPlayerStore = {
+  reset: () => void;
+
   isPlaying: boolean;
   setPlaying: (playing: boolean) => void;
 
@@ -15,6 +17,13 @@ type AudioPlayerStore = {
 }
 
 export const useAudioPlayerStore = create<AudioPlayerStore>((set) => ({
+  reset: () => {
+    set({ isPlaying: false });
+    set({ currentTime: 0 });
+    set({ selectedTrack: 0 });
+    set({ metadata: {} });
+  },
+
   isPlaying: false,
   setPlaying: (playing: boolean) => set({ isPlaying: playing }),
 

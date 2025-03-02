@@ -2,17 +2,19 @@ import React from 'react';
 import { AudioPlayer } from '../components/AudioPlayer/AudioPlayer';
 import { useAppStore } from '../stores/AppStore';
 import { Model } from '../components/ModelSelector/Model';
-import { getFileNameFromPath } from '../utils/files';
 import { Button, Card, CardBody } from '@material-tailwind/react';
-import PageTitle from '../components/Base/PageTitle';
 import AudioMetadata from '../components/AudioPlayer/AudioMetadata';
 import { Column, Row } from '../components/Base/Grid';
 import { AudioPlayerControls } from '../components/AudioPlayer/AudioPlayer';
 import AlbumArt from '../components/AudioPlayer/AlbumArt';
+import { TbArrowsSplit2 } from "react-icons/tb";
+import { MdCancel } from "react-icons/md";
+import { useAudioPlayerStore } from '../components/AudioPlayer/AudioPlayerStore';
 
 export default function FileOverview() {
 
     const appStore = useAppStore();
+    const audioPlayerStore = useAudioPlayerStore();
 
     function handleProcess(): void {
         console.log("handleProcess", appStore.currentFile);
@@ -21,7 +23,8 @@ export default function FileOverview() {
     }
 
     function handleCancel(): void {
-        appStore.setCurrentFile(null);
+        appStore.reset();
+        audioPlayerStore.reset();
     }
 
     return (
@@ -42,8 +45,14 @@ export default function FileOverview() {
             </Card>
 
             <Row className="gap-4  justify-center">
-                <Button variant="solid" onClick={handleProcess}>Process</Button>
-                <Button variant="outline" onClick={handleCancel}>Cancel</Button>
+                <Button size="lg" variant="solid" className="text-lg rounded-lg" onClick={handleProcess}>
+                    <TbArrowsSplit2 className="text-xl mr-1" />
+                    Separate Stems
+                </Button>
+                <Button size="lg" variant="outline" className="text-lg rounded-lg hover:bg-red-500 hover:border-red-700" onClick={handleCancel}>
+                    <MdCancel className="text-xl mr-1" />
+                    Cancel
+                </Button>
             </Row>
         </div>
     );

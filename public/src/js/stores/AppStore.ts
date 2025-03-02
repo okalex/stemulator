@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 
 type AppStore = {
+  reset: () => void;
+
   currentFile: string | null;
   setCurrentFile: (file: string | null) => void;
 
@@ -18,6 +20,14 @@ type AppStore = {
 };
 
 export const useAppStore = create<AppStore>((set) => ({
+  reset: () => {
+    set({ currentFile: null });
+    set({ isProcessing: false });
+    set({ isProcessed: false });
+    set({ processedFiles: { orig: "" } });
+    set({ progress: 0 });
+  },
+
   currentFile: null,
   setCurrentFile: (file: string) => set({ currentFile: file }),
 

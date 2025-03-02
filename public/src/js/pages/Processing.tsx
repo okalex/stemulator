@@ -1,9 +1,11 @@
 import React from 'react';
 import { useAppStore } from '../stores/AppStore';
-import { Progress, Typography } from '@material-tailwind/react';
+import { Card, CardBody, Progress, Typography } from '@material-tailwind/react';
 import { getFileNameFromPath } from '../utils/files';
 import PageTitle from '../components/Base/PageTitle';
 import toast from 'react-hot-toast';
+import AudioMetadata from '../components/AudioPlayer/AudioMetadata';
+import { Column } from '../components/Base/Grid';
 
 export default function Processing() {
 
@@ -39,17 +41,19 @@ export default function Processing() {
 
     return (
         <div className="w-full">
-            <PageTitle>{getFileNameFromPath(appStore.currentFile)}</PageTitle>
+            <Card className="mt-8 mb-8 p-2 shadow-lg">
+                <CardBody>
+                    <Column className="gap-4 pb-4">
+                        <AudioMetadata className="w-full text-lg" />
 
-            <div>
-                Processing audio… {appStore.progress}%
-            </div>
+                        <Typography>Processing audio… {appStore.progress}%</Typography>
 
-            <div>
-                <Progress size="sm" value={appStore.progress}>
-                    <Progress.Bar className="transition-all" />
-                </Progress>
-            </div>
+                        <Progress size="sm" value={appStore.progress}>
+                            <Progress.Bar className="transition-all" />
+                        </Progress>
+                    </Column>
+                </CardBody>
+            </Card>
         </div>
     );
 }
