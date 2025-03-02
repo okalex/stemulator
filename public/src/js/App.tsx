@@ -31,7 +31,7 @@ function Main() {
     }
 
     return (
-        <div className="p-8 pt-16 h-screen">
+        <div className="p-8 pt-16 h-screen flex">
             {appState === "new" && (
                 <NewFile />
             )}

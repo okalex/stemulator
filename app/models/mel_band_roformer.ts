@@ -12,10 +12,21 @@ if (app.isPackaged) {
   resourcePath = path.join(process.resourcesPath, 'app.asar.unpacked');
 }
 
-function calcProgress(updateProgress: (value: number) => void) {
+export default function melBandRoformer(
+  wavFile: string,
+  workingDir: string,
+  sendStdout: (data: string) => void,
+  updateProgress: (value: number) => void,
+  processingComplete: (files: object) => (exitCode: number) => void
+): void {
+  const modelPath = path.join(resourcePath, 'models', 'mel_band_roformer');
+  const inference = path.join(modelPath, 'inference');
+
   let totalTime: number = 1000000000;
 
-  return (data: string) => {
+  function handleStdout(data: string) {
+    sendStdout(data);
+
     // Get total time estimate
     const totalTimeRegex = /Estimated total processing time for this track: ([0-9]+\.[0-9]+) seconds/;
     const totalTimeMatch = data.match(totalTimeRegex);
@@ -33,17 +44,7 @@ function calcProgress(updateProgress: (value: number) => void) {
       const progress = Math.round((totalTime - timeLeft) / totalTime * 100);
       updateProgress(progress);
     }
-  };
-}
-
-export default function melBandRoformer(
-  file: string,
-  workingDir: string,
-  updateProgress: (value: number) => void,
-  processingComplete: (files: object) => (exitCode: number) => void
-): void {
-  const modelPath = path.join(resourcePath, 'models', 'mel_band_roformer');
-  const inference = path.join(modelPath, 'inference');
+  }
 
   const modelArgs = [
     '--config_path', quoted(`${modelPath}/configs/config_vocals_mel_band_roformer.yaml`),
@@ -52,13 +53,6 @@ export default function melBandRoformer(
     '--store_dir', quoted(workingDir)
   ];
 
-  const wavFile = path.join(workingDir, 'orig.wav');
-  if (getFileExtension(file) !== 'wav') {
-    convertToWav(file, wavFile);
-  } else {
-    copyFile(file, wavFile);
-  }
-
   const files = {
     orig: wavFile,
     vocals: path.join(workingDir, 'orig_vocals.wav'),
@@ -66,6 +60,6 @@ export default function melBandRoformer(
   }
 
   log.info("Running mel-band roformer inference");
-  spawn(inference, modelArgs, spawnOptions(modelPath), calcProgress(updateProgress), processingComplete(files));
+  spawn(inference, modelArgs, processingComplete(files), handleStdout, spawnOptions(modelPath));
 
 }

@@ -2,11 +2,11 @@ import { Model } from '../public/src/js/components/ModelSelector/Model';
 import IpcMain from './ipc/IpcMain';
 import log from 'electron-log/main';
 import melBandRoformer from './models/mel_band_roformer';
-import { getMetadata } from './utils/ffmpeg';
+import { convertToWav, getMetadata } from './utils/ffmpeg';
 import path from 'path';
 import fs from 'fs';
 import { app } from 'electron';
-import { getFilenameWithoutExtension, mkdir } from './utils/files';
+import { copyFile, getFileExtension, getFilenameWithoutExtension, mkdir } from './utils/files';
 import albumArt from 'album-art';
 import https from 'https';
 
@@ -65,6 +65,10 @@ export default function processAudio(event: any, file: string, model: Model): vo
         ipc.sendOutput(IpcMain.formatOutputJson('progress', value));
     }
 
+    function sendStdout(data: string): void {
+        ipc.sendOutput(IpcMain.formatOutputJson('output', data));
+    }
+
     function processingComplete(files: object) {
         return (exitCode) => {
             if (exitCode === 0) {
@@ -78,11 +82,23 @@ export default function processAudio(event: any, file: string, model: Model): vo
     }
 
     const workingDir = getWorkingDir(file);
+    const wavFile = path.join(workingDir, 'orig.wav');
 
-    if (model === Model.mel_band_roformer) {
-        melBandRoformer(file, workingDir, updateProgress, processingComplete);
-    } else {
-        ipc.sendError("Model not implemented");
+    function runModel() {
+        if (model === Model.mel_band_roformer) {
+            melBandRoformer(wavFile, workingDir, sendStdout, updateProgress, processingComplete);
+        } else {
+            ipc.sendError("Model not implemented");
+        }
     }
+
+    if (getFileExtension(file) !== 'wav') {
+        convertToWav(file, wavFile, runModel, sendStdout);
+    } else {
+        copyFile(file, wavFile);
+        runModel();
+    }
+
+
 
 }

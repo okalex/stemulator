@@ -1,6 +1,6 @@
 import log from 'electron-log/main';
 import { quoted } from './string';
-import { spawnSync } from './process';
+import { spawn, spawnSync } from './process';
 import path from 'path';
 import fs from 'fs';
 
@@ -9,14 +9,30 @@ export function ffmpegPath() {
   return ffmpegPath;
 }
 
+export function ffmpeg(
+  args: string[],
+  onExit: (code: number) => void,
+  onData?: (data: string) => void,
+) {
+  return spawn(ffmpegPath(), args, onExit, onData);
+}
+
 export function ffmpegSync(args: string[] = []) {
   return spawnSync(ffmpegPath(), args);
 }
 
-export function convertToWav(src: string, dest: string) {
+export function convertToWav(
+  src: string,
+  dest: string,
+  onExit: (code: number) => void,
+  onData?: (data: string) => void,
+) {
   log.info(`Converting ${src} to wav...`);
+  if (onData) {
+    onData(`Converting ${src} to wav...`);
+  }
   const args = ['-y', '-i', quoted(src), quoted(dest)];
-  return ffmpegSync(args);
+  return ffmpeg(args, onExit, onData);
 }
 
 export function getMetadata(src: string, destDir: string) {

@@ -1,19 +1,22 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAppStore } from '../stores/AppStore';
 import { Card, CardBody, Progress, Typography } from '@material-tailwind/react';
-import { getFileNameFromPath } from '../utils/files';
-import PageTitle from '../components/Base/PageTitle';
 import toast from 'react-hot-toast';
 import AudioMetadata from '../components/AudioPlayer/AudioMetadata';
 import { Column } from '../components/Base/Grid';
+import Terminal from '../components/Base/Terminal';
 
 export default function Processing() {
 
     const appStore = useAppStore();
 
-    function handleOutput(output: any): void {
-        if (output.type === "progress") {
-            appStore.setProgress(output.data);
+    const [output, setOutput] = useState<string>("");
+
+    function handleOutput(data: any): void {
+        if (data.type === "progress") {
+            appStore.setProgress(data.data);
+        } else if (data.type === "output") {
+            setOutput(output + "\n" + data.data);
         }
     }
 
@@ -51,6 +54,13 @@ export default function Processing() {
                         <Progress size="sm" value={appStore.progress}>
                             <Progress.Bar className="transition-all" />
                         </Progress>
+
+                        <div>
+                            <Typography className="text-sm font-bold" >Output:</Typography>
+                            <Terminal>
+                                {output}
+                            </Terminal>
+                        </div>
                     </Column>
                 </CardBody>
             </Card>

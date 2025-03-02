@@ -4,20 +4,25 @@ import { ChildProcess, SpawnOptions, spawn as _spawn, spawnSync as _spawnSync } 
 export function spawn(
   processName: string,
   args: string[],
-  spawnOptions: SpawnOptions,
-  onData: (data: string) => void,
-  onExit: (code: number) => void
+  onExit: (code: number) => void,
+  onData?: (data: string) => void,
+  options?: SpawnOptions,
 ): ChildProcess {
   log.info(`Spawning ${processName}`);
-  const process = _spawn(processName, args, spawnOptions);
+  const process = _spawn(processName, args, options ?? spawnOptions());
 
   process.stdout?.on('data', (data) => {
     log.info(data.toString());
-    onData(data.toString());
+    if (onData) {
+      onData(data.toString());
+    }
   });
 
   process.stderr?.on('data', (data) => {
     log.error(data.toString());
+    if (onData) {
+      onData(data.toString());
+    }
   });
 
   process.on('exit', (code) => {
