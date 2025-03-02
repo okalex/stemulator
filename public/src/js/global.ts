@@ -10,7 +10,7 @@ declare global {
             handleOutput: (callback: (event: any, output: any) => void) => void,
             handleError: (callback: (event: any, output: any) => void) => void,
             handleComplete: (callback: (code: number, files: object) => void) => void,
-            startDrag: (file: string) => void,
+            startDrag: (file: string, icon?: string) => void,
             removeListeners: () => void,
             copyToClipboard: (filePath: string) => void,
         };

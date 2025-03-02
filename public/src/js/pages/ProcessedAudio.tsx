@@ -1,5 +1,4 @@
 import React from 'react';
-import { AudioMultiPlayer } from '../components/AudioPlayer';
 import { DraggableBox } from '../components/DraggableBox';
 import { useAppStore } from '../stores/AppStore';
 import { useAudioPlayerStore } from '../components/AudioPlayer/AudioPlayerStore';
@@ -10,6 +9,8 @@ import { getFileNameFromPath } from '../utils/files';
 import { FaCopy, FaGripVertical } from 'react-icons/fa6';
 import PageTitle from '../components/Base/PageTitle';
 import AudioMetadata from '../components/AudioPlayer/AudioMetadata';
+import { AudioPlayer, AudioPlayerControls } from '../components/AudioPlayer/AudioPlayer';
+import AlbumArt from '../components/AudioPlayer/AlbumArt';
 
 export default function ProcessedAudio() {
 
@@ -28,7 +29,6 @@ export default function ProcessedAudio() {
 
     function handleCopyFile(event) {
         event.preventDefault();
-
         const fileUrl = fileUrls[audioPlayerStore.selectedTrack];
         console.log("Copying file...", fileUrl);
         window.api.copyToClipboard(fileUrl);
@@ -37,30 +37,28 @@ export default function ProcessedAudio() {
     return (
         <div className="w-full">
             <Column>
-                <PageTitle>{getFileNameFromPath(appStore.currentFile)}</PageTitle>
-
-                <div className="mt-4 mb-8 m-auto">
+                <div className="m-auto">
                     <TrackSelector />
                 </div>
 
-
-                <Card className="bg-gray-50">
+                <Card className="mt-4 mb-8 p-2">
                     <CardBody>
+                        <Row className="gap-4">
+                            <Column className="grow">
+                                <div className="mt-0 mb-4">
+                                    <AudioMetadata className="w-full" />
+                                </div>
 
-                        <AudioMetadata className="w-full" />
+                                <Row className="items-center gap-4">
+                                    <AudioPlayerControls />
+                                    <AudioPlayer height={80} className="grow" urls={fileUrls} />
+                                </Row>
+                            </Column>
 
-                        <Row>
-                            <AudioMultiPlayer urls={fileUrls} height={waveHeight} className="grow">
-                                <Button onClick={handleCopyFile} className="h-12 ml-4 mt-auto mb-auto">
-                                    <FaCopy />
-                                </Button>
-
-                                <DraggableBox dragData={fileUrls[audioPlayerStore.selectedTrack]} className="h-12 ml-4 mt-auto mb-auto">
-                                    <Button className="h-12">
-                                        <FaGripVertical />
-                                    </Button>
-                                </DraggableBox>
-                            </AudioMultiPlayer>
+                            <DraggableBox dragData={fileUrls[audioPlayerStore.selectedTrack]} dragIcon={audioPlayerStore.metadata?.albumArtUrl} className="relative">
+                                <AlbumArt className="w-36 h-36" />
+                                <FaCopy onClick={handleCopyFile} className="cursor-copy text-primary absolute top-0 right-0 bg-gray-100 pl-2 pb-2 pt-1 pr-1 h-8 w-8 rounded-tr-md rounded-bl-md opacity-80 border-l border-b border-gray-400" />
+                            </DraggableBox>
                         </Row>
                     </CardBody>
                 </Card>

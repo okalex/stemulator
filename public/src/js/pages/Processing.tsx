@@ -26,7 +26,8 @@ export default function Processing() {
         window.api.removeListeners();
         appStore.setProcessing(false);
     }
-
+    
+    window.api.removeListeners();
     window.api.handleOutput(handleOutput);
     window.api.handleError(handleError);
     window.api.handleComplete(handleComplete);

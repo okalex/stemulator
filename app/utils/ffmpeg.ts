@@ -24,7 +24,8 @@ export function getMetadata(src: string, destDir: string) {
   const destFile = path.join(destDir, 'metadata.txt')
   const args = ['-i', quoted(src), '-y', '-f', 'ffmetadata', quoted(destFile)];
   ffmpegSync(args);
-  return parseMetadata(destFile);
+  const metadata = parseMetadata(destFile);
+  return metadata;
 }
 
 function parseMetadata(src: string) {

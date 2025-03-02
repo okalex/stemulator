@@ -8,6 +8,7 @@ import fs from 'fs';
 import { app } from 'electron';
 import { getFilenameWithoutExtension, mkdir } from './utils/files';
 import albumArt from 'album-art';
+import https from 'https';
 
 function getWorkingDir(file: string): string {
     const dataDir = app.getPath('userData');
@@ -23,6 +24,20 @@ function initWorkingDir(file: string): string {
     return mkdir(workingDir);
 }
 
+function downloadFile(url: string, dest: string, callback: () => void): void {
+    log.info(`Downloading ${url} to ${dest}`);
+    const file = fs.createWriteStream(dest);
+    const request = https.get(url, (response) => {
+        response.pipe(file);
+
+        file.on("finish", () => {
+            file.close();
+            console.log("Download Completed");
+            callback();
+        });
+    }); // TODO: handle errors
+}
+
 export async function fetchMetadata(event: any, file: string): Promise<void> {
     log.info(`Fetching metadata for ${file}`);
     const ipc = new IpcMain(event);
@@ -31,13 +46,11 @@ export async function fetchMetadata(event: any, file: string): Promise<void> {
 
     const metadata = getMetadata(file, workingDir);
 
-    let albumArtUrl = '';
-    await albumArt(metadata.artist, { album: metadata.album, size: 'large' }).then((url) => {
-        log.info('Album art URL: ' + url);
-        albumArtUrl = url;
+    const albumArtUrl = await albumArt(metadata.artist, { album: metadata.album, size: 'large' });
+    const albumArtPath = path.join(workingDir, 'albumArt.jpg')
+    downloadFile(albumArtUrl, albumArtPath, () => {
+        ipc.sendMetadata({ ...metadata, albumArtUrl: `file://${albumArtPath}` });
     });
-
-    ipc.sendMetadata({ ...metadata, albumArtUrl });
 }
 
 export default function processAudio(event: any, file: string, model: Model): void {

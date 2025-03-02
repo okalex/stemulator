@@ -47,11 +47,13 @@ function App() {
     }
 
     window.api.handleSetMetadata(handleSetMetadata);
-    
+
     return (
         <DndProvider backend={HTML5Backend}>
-            <Header />
-            <Main />
+            <div className="bg-gray-100">
+                <Header />
+                <Main />
+            </div>
         </DndProvider>
     );
 };

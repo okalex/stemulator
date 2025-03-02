@@ -2,19 +2,20 @@ import React, { useState } from 'react';
 
 type Props = {
     className?: string,
-    children?: JSX.Element,
+    children?: any,
     dragData: any,
+    dragIcon?: string,
     ref?: any
 };
 
-export function DraggableBox({ className, children, dragData, ref }: Props) {
+export function DraggableBox({ className, children, dragData, dragIcon, ref }: Props) {
 
     const [mouseDown, setMouseDown] = useState(false);
 
     function handleDragStart(event) {
         event.preventDefault();
         console.log("Drag start", dragData);
-        window.api.startDrag(dragData);
+        window.api.startDrag(dragData, dragIcon);
     }
 
     function handleMouseDown() {

@@ -1,7 +1,6 @@
-import { app, clipboard, ipcMain } from "electron";
+import { clipboard, ipcMain } from "electron";
 import { Model } from "../../public/src/js/components/ModelSelector/Model";
 import { IpcChannel } from "./IpcChannel";
-import { readFile } from "fs";
 import plist from "plist";
 import { OutputObject } from "../../types/OutputObject";
 
@@ -43,11 +42,11 @@ export default class IpcMain {
     }
 
     static handleDragStart(): void {
-        ipcMain.on(IpcChannel.ON_DRAG_START, (event: any, file: string) => {
+        ipcMain.on(IpcChannel.ON_DRAG_START, (event: any, file: string, icon?: string) => {
             console.log("Handling dragStart", file);
             event.sender.startDrag({
                 file: file,
-                icon: '/Users/alex/src/okalex/Stemulator/public/src/img/audio-file.png',
+                icon: icon?.replace('file://', '') ?? '/Users/alex/src/okalex/Stemulator/public/src/img/audio-file.png',
             });
         });
     }

@@ -51,8 +51,8 @@ export default class IpcRenderer {
         ipcRenderer.on(IpcChannel.HANDLE_COMPLETE, _callback)
     }
 
-    static startDrag(file: string): void {
-        ipcRenderer.send(IpcChannel.ON_DRAG_START, file);
+    static startDrag(file: string, icon?: string): void {
+        ipcRenderer.send(IpcChannel.ON_DRAG_START, file, icon);
     }
 
     static removeListeners(): void {
