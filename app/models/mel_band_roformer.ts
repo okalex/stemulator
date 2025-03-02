@@ -15,7 +15,7 @@ if (app.isPackaged) {
 export default function melBandRoformer(
   wavFile: string,
   workingDir: string,
-  sendStdout: (data: string) => void,
+  sendOutput: (channel: string, data: string) => void,
   updateProgress: (value: number) => void,
   processingComplete: (files: object) => (exitCode: number) => void
 ): void {
@@ -24,8 +24,8 @@ export default function melBandRoformer(
 
   let totalTime: number = 1000000000;
 
-  function handleStdout(data: string) {
-    sendStdout(data);
+  function handleStdout(channel: string, data: string) {
+    sendOutput(channel, data);
 
     // Get total time estimate
     const totalTimeRegex = /Estimated total processing time for this track: ([0-9]+\.[0-9]+) seconds/;

@@ -65,8 +65,8 @@ export default function processAudio(event: any, file: string, model: Model): vo
         ipc.sendOutput(IpcMain.formatOutputJson('progress', value));
     }
 
-    function sendStdout(data: string): void {
-        ipc.sendOutput(IpcMain.formatOutputJson('output', data));
+    function sendStdout(channel: string, data: string): void {
+        ipc.sendOutput(IpcMain.formatOutputJson(channel, data));
     }
 
     function processingComplete(files: object) {
@@ -92,8 +92,16 @@ export default function processAudio(event: any, file: string, model: Model): vo
         }
     }
 
+    function convertToWavComplete(code: number) {
+        if (code === 0) {
+            runModel();
+        } else {
+            ipc.sendError("Error converting to wav");
+        }
+    }
+
     if (getFileExtension(file) !== 'wav') {
-        convertToWav(file, wavFile, runModel, sendStdout);
+        convertToWav(file, wavFile, convertToWavComplete, sendStdout);
     } else {
         copyFile(file, wavFile);
         runModel();

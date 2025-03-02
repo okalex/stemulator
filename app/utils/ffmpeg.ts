@@ -12,7 +12,7 @@ export function ffmpegPath() {
 export function ffmpeg(
   args: string[],
   onExit: (code: number) => void,
-  onData?: (data: string) => void,
+  onData?: (channel: string, data: string) => void,
 ) {
   return spawn(ffmpegPath(), args, onExit, onData);
 }
@@ -25,11 +25,11 @@ export function convertToWav(
   src: string,
   dest: string,
   onExit: (code: number) => void,
-  onData?: (data: string) => void,
+  onData?: (channel: string, data: string) => void,
 ) {
   log.info(`Converting ${src} to wav...`);
   if (onData) {
-    onData(`Converting ${src} to wav...`);
+    onData('stdout', `Converting ${src} to wav...`);
   }
   const args = ['-y', '-i', quoted(src), quoted(dest)];
   return ffmpeg(args, onExit, onData);

@@ -5,7 +5,7 @@ export function spawn(
   processName: string,
   args: string[],
   onExit: (code: number) => void,
-  onData?: (data: string) => void,
+  onData?: (channel: string, data: string) => void,
   options?: SpawnOptions,
 ): ChildProcess {
   log.info(`Spawning ${processName}`);
@@ -14,14 +14,14 @@ export function spawn(
   process.stdout?.on('data', (data) => {
     log.info(data.toString());
     if (onData) {
-      onData(data.toString());
+      onData("stdout", data.toString());
     }
   });
 
   process.stderr?.on('data', (data) => {
     log.error(data.toString());
     if (onData) {
-      onData(data.toString());
+      onData("stderr", data.toString());
     }
   });
 

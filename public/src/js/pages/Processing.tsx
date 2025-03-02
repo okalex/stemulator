@@ -15,12 +15,17 @@ export default function Processing() {
     function handleOutput(data: any): void {
         if (data.type === "progress") {
             appStore.setProgress(data.data);
-        } else if (data.type === "output") {
+        } else if (data.type === "stdout") {
+            setOutput(output + "\n" + data.data);
+        } else if (data.type === "stderr") {
             setOutput(output + "\n" + data.data);
         }
     }
 
     function handleError(data: string): void {
+        appStore.setProcessing(false);
+        window.api.removeListeners();
+        toast.error("Processing failed");
     }
 
     function handleComplete(code: number, files: ProcessedFileObject): void {
